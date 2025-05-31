@@ -13,7 +13,7 @@ This repository contains comprehensive documentation for an Industrial IoT stack
 - Document each technology in the IIoT stack
 - Provide a unified view of how components work together
 - Track implementation status and roadmap
-- Link to implementation scripts in [Steel Bonnet repository]
+- Link to implementation scripts in [Steel Bonnet repository](https://github.com/slimstrongarm/Steel_Bonnet)
 
 ## Structure
 

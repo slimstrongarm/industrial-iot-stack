@@ -77,7 +77,7 @@ graph TD
 ## Quick Links
 
 - [Component Templates](./templates/component-template.md)
-- [Steel Bonnet Scripts Repository](https://github.com/yourusername/steel-bonnet)
+- [Steel Bonnet Scripts Repository](https://github.com/slimstrongarm/Steel_Bonnet)
 - [Deployment Guide](./docs/deployment.md)
 - [Troubleshooting Guide](./docs/troubleshooting.md)
 
