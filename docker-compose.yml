@@ -1,0 +1,17 @@
+# Docker Compose file for Flint to detect local Ignition
+# This doesn't run any containers, just helps Flint find the gateway
+
+version: '3.8'
+
+services:
+  ignition-gateway:
+    # Placeholder service - your Ignition is already running locally
+    image: inductiveautomation/ignition:8.1.44
+    container_name: local-ignition-reference
+    environment:
+      GATEWAY_ADMIN_USERNAME: admin
+      GATEWAY_ADMIN_PASSWORD: password
+    ports:
+      - "8088:8088"
+    # Note: This is just for Flint detection
+    # Your actual Ignition is running at http://localhost:8088

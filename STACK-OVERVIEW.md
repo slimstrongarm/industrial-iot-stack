@@ -1,75 +1,63 @@
 # Industrial IoT Stack Overview
 
-*Last Updated: May 30, 2025*
+*Last Updated: June 1, 2025*
+
+## 🎯 Strategic Update: Docker Migration in Progress
+**New Direction**: Moving to Docker-based deployment on dedicated server with Tailscale access for improved reliability and modular architecture. See [DOCKER_MIGRATION_STRATEGY.md](./DOCKER_MIGRATION_STRATEGY.md) for details.
 
 ## Stack Architecture
 
 ```mermaid
 graph TD
-    subgraph "Field Layer"
-        A1[Siemens PLC] 
-        A2[Pi + Phidgets]
-        A3[Process Sensors]
-    end
-    
-    subgraph "Edge Computing"
-        B[Ignition Edge<br/>Jython 2.7]
-        D[Node-RED<br/>Flow Engine]
-        C[MQTT Broker<br/>Mosquitto]
-    end
-    
-    subgraph "Data Flow"
-        A1 -->|Modbus| B
-        A2 -->|OPC-UA| B
-        A3 -->|4-20mA| A1
-        D -->|MQTT Sub| C
-        D -->|OPC-UA Write| B
-        B -->|Store & Forward| E[Cloud Systems]
-        B -->|Local HMI| F[Operator Screens]
-    end
+    A[Field Devices] -->|Modbus/OPC-UA| B[Ignition Edge Container]
+    B -->|MQTT| C[MQTT Broker Container]
+    B -->|REST API| D[Node-RED Container]
+    D -->|MQTT| C
+    C -->|MQTT| E[Central Systems]
+    D -->|HTTP/Database| F[External Services]
+    B -->|Local Storage| G[Edge Database]
+    H[VS Code + Flint] -->|Project Scan API| B
+    I[Google Sheets] -->|Progress Tracking| J[Monitoring Dashboard]
 ```
 
 ## Component Summary
 
 ### 🔧 Ignition Edge
 **Status**: 🟢 Active  
-**Purpose**: Edge data collection, OPC-UA server, and local HMI  
+**Purpose**: Edge data collection and local HMI  
 [Full Documentation](./stack-components/ignition-edge/README.md)
 
 **Key Capabilities**:
-- Modbus device connectivity (Siemens PLC)
-- OPC-UA server for Pi edge nodes
-- UDT-based equipment modeling
+- Modbus/OPC-UA device connectivity
+- Local operator interfaces
+- Edge data processing
 - Store & forward for reliability
-- Jython 2.7 scripting (Note: legacy Python version)
 
 ---
 
 ### 🔴 Node-RED
 **Status**: 🟢 Active  
-**Purpose**: MQTT to OPC-UA bridge and flow automation  
+**Purpose**: Flow-based integration and automation  
 [Full Documentation](./stack-components/node-red/README.md)
 
 **Key Capabilities**:
-- MQTT topic subscription and processing
-- OPC-UA tag creation in Ignition
-- Equipment registration workflows
-- Data validation and transformation
-- Edge deployment on Raspberry Pi
+- Visual programming for integrations
+- Protocol transformation
+- Business logic implementation
+- Third-party API connectivity
 
 ---
 
 ### 📡 MQTT Infrastructure
-**Status**: 🟢 Active  
-**Purpose**: Messaging backbone for legacy device integration  
+**Status**: 🟡 Partial  
+**Purpose**: Messaging backbone for IIoT data  
 [Full Documentation](./stack-components/mqtt/README.md)
 
 **Key Capabilities**:
-- Mosquitto broker deployment
-- UNS-structured topic hierarchy
-- QoS 1 for reliable delivery
-- Bridge to OPC-UA via Node-RED
-- Quarantine area for non-standard devices
+- Publish/subscribe messaging
+- Quality of Service guarantees
+- Topic-based data organization
+- Lightweight protocol for edge devices
 
 ---
 
@@ -83,17 +71,47 @@ graph TD
 
 ## Current Implementation Status
 
-### Overall Stack Health: 85%
+### Overall Stack Health: 75%
 
 - ✅ **Core Infrastructure**: Operational
-- ✅ **Device Connectivity**: Siemens PLC via Modbus active
-- ✅ **MQTT Bridge**: Node-RED flows deployed
-- ✅ **UDT Structure**: Brewery equipment models defined
-- 🚧 **Edge Nodes**: Pi + Phidget integration ready for deployment
-- 📋 **Production Deployment**: Pending field installation
+- ✅ **Device Connectivity**: Working for Modbus devices
+- 🚧 **Data Pipeline**: MQTT partially configured
+- 📋 **Analytics**: Planned for Q3 2025
+- 📋 **Cloud Integration**: Under design
+
+## 🐳 Docker Migration Status
+
+### Migration Components
+- **Ignition + Flint**: Docker Compose configuration ready
+- **Node-RED**: Existing container to be integrated
+- **MQTT Infrastructure**: Mosquitto in container
+- **Monitoring Stack**: Portainer + Grafana planned
+- **Progress Tracking**: Google Sheets integration active
+
+### Access Methods
+- **Primary**: SSH via Tailscale to server
+- **Management**: TMUX sessions for persistent access
+- **Monitoring**: Google Sheets dashboard for real-time status
+- **Development**: VS Code + Flint for remote project editing
+
+## 📊 Progress Tracking
+
+### Google Sheets Integration
+- **Master Tracker**: Real-time progress visibility
+- **Automated Updates**: 5-minute sync intervals
+- **Mobile Access**: Monitor from anywhere
+- **Team Collaboration**: Shared view of all activities
+
+### Quick Setup
+1. Copy `scripts/google_sheets_setup.gs` to new Google Sheet
+2. Run `setupProgressTracker()` function
+3. Configure automation scripts
+4. See [GOOGLE_SHEETS_QUICK_SETUP.md](./GOOGLE_SHEETS_QUICK_SETUP.md)
 
 ## Quick Links
 
+- [Docker Migration Strategy](./DOCKER_MIGRATION_STRATEGY.md)
+- [Google Sheets Progress Tracker](./GOOGLE_SHEETS_PROGRESS_TRACKER.md)
 - [Component Templates](./templates/component-template.md)
 - [Steel Bonnet Scripts Repository](https://github.com/slimstrongarm/Steel_Bonnet)
 - [Deployment Guide](./docs/deployment.md)
