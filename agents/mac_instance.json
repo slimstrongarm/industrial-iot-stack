@@ -1,0 +1,18 @@
+{
+  "instance_id": "mac-macbook-pro",
+  "instance_type": "coordinator",
+  "location": "local-macbook",
+  "status_bar_color": "green",
+  "tmux_session": "claude-mac",
+  "responsibilities": [
+    "google-sheets-coordination",
+    "approval-management", 
+    "local-development",
+    "git-orchestration"
+  ],
+  "google_sheets": {
+    "connected": true,
+    "sheet_id": "1lLZ7c3ec4PfGb32SWWHFeVN-TF2UJeLUsmH99vBb9Do",
+    "monitoring_active": true
+  }
+}
