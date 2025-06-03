@@ -1,0 +1,70 @@
+apiVersion: 1
+
+datasources:
+  # InfluxDB for time-series sensor data
+  - name: InfluxDB
+    type: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    jsonData:
+      version: Flux
+      organization: industrial-iot
+      defaultBucket: sensors
+      tlsSkipVerify: true
+    secureJsonData:
+      token: ${INFLUXDB_TOKEN}
+    isDefault: true
+    editable: false
+
+  # PostgreSQL for Ignition historical data
+  - name: PostgreSQL-Ignition
+    type: postgres
+    access: proxy
+    url: postgres:5432
+    database: ignition
+    user: ${POSTGRES_USER}
+    secureJsonData:
+      password: ${POSTGRES_PASSWORD}
+    jsonData:
+      sslmode: disable
+      maxOpenConns: 0
+      maxIdleConns: 2
+      connMaxLifetime: 14400
+      postgresVersion: 1500
+      timescaledb: false
+    editable: false
+
+  # MQTT Live Data
+  - name: MQTT
+    type: grafana-mqtt-datasource
+    access: proxy
+    jsonData:
+      uri: tcp://mqtt-broker:1883
+      username: ${MQTT_USER}
+      password: ${MQTT_PASSWORD}
+      clientId: grafana-${HOSTNAME}
+      subscriptions:
+        - topic: iiot/+/+/+
+          qos: 0
+    editable: false
+
+  # Prometheus for system metrics
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    jsonData:
+      httpMethod: POST
+      manageAlerts: true
+      prometheusType: Prometheus
+      prometheusVersion: 2.48.0
+    editable: false
+
+  # JSON API for external integrations
+  - name: JSON-API
+    type: yesoreyeram-infinity-datasource
+    access: proxy
+    jsonData:
+      tlsSkipVerify: true
+      timeoutInSeconds: 60
+    editable: false

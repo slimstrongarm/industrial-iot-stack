@@ -1,0 +1,207 @@
+{
+  "name": "Formbricks to Google Sheets with Error Handling",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "formbricks-webhook",
+        "responseMode": "onReceived",
+        "responseData": "allEntries"
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "formbricks-form-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validate incoming data\nconst formData = items[0].json;\n\n// Check if we have valid data\nif (!formData || Object.keys(formData).length === 0) {\n  throw new Error('No form data received');\n}\n\n// Extract form data and format for Google Sheets\nconst timestamp = new Date().toISOString();\n\n// Extract form responses with error checking\nconst responses = formData.data?.responses || formData.responses || {};\n\nif (Object.keys(responses).length === 0) {\n  throw new Error('No responses found in form data');\n}\n\n// Build row data\nconst rowData = {\n  timestamp: timestamp,\n  formId: formData.surveyId || formData.formId || 'unknown',\n  responseId: formData.responseId || formData.id || 'unknown',\n  status: 'success'\n};\n\n// Add each response as a column\nObject.keys(responses).forEach(key => {\n  const response = responses[key];\n  if (response === null || response === undefined) {\n    rowData[key] = '';\n  } else if (typeof response === 'object') {\n    rowData[key] = JSON.stringify(response);\n  } else {\n    rowData[key] = String(response);\n  }\n});\n\nreturn [{\n  json: rowData\n}];"
+      },
+      "name": "Validate & Format Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "sheetId": "YOUR_SHEET_ID",
+        "range": "Sheet1!A:Z",
+        "options": {
+          "valueInputMode": "USER_ENTERED"
+        },
+        "dataMode": "autoMapInputData"
+      },
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 2,
+      "position": [650, 300],
+      "credentials": {
+        "googleSheetsApi": {
+          "id": "1",
+          "name": "Google Sheets Account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "message",
+              "value": "=Successfully processed form {{$node[\"Validate & Format Data\"].json[\"responseId\"]}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Success Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [850, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Capture error details\nconst error = $input.all()[0].error;\nconst errorData = {\n  timestamp: new Date().toISOString(),\n  errorMessage: error?.message || 'Unknown error',\n  errorType: error?.name || 'UnknownError',\n  node: error?.node || 'Unknown',\n  formData: JSON.stringify($input.all()[0].json || {}),\n  status: 'failed'\n};\n\nreturn [{\n  json: errorData\n}];"
+      },
+      "name": "Error Handler",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [650, 450]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "sheetId": "YOUR_ERROR_LOG_SHEET_ID",
+        "range": "Errors!A:F",
+        "options": {
+          "valueInputMode": "USER_ENTERED"
+        },
+        "dataMode": "autoMapInputData"
+      },
+      "name": "Log Errors to Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 2,
+      "position": [850, 450],
+      "credentials": {
+        "googleSheetsApi": {
+          "id": "1",
+          "name": "Google Sheets Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "n8n@your-domain.com",
+        "toEmail": "admin@your-domain.com",
+        "subject": "Form Processing Error - {{$node[\"Error Handler\"].json[\"errorType\"]}}",
+        "text": "=Error processing Formbricks form submission:\n\nError: {{$node[\"Error Handler\"].json[\"errorMessage\"]}}\nNode: {{$node[\"Error Handler\"].json[\"node\"]}}\nTime: {{$node[\"Error Handler\"].json[\"timestamp\"]}}\n\nForm Data:\n{{$node[\"Error Handler\"].json[\"formData\"]}}\n\nPlease check the error log sheet for details.",
+        "options": {}
+      },
+      "name": "Email Alert",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1050, 450],
+      "credentials": {
+        "smtp": {
+          "id": "2",
+          "name": "Email Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Formbricks Error Monitor\n\nLast Error: {{$node[\"Error Handler\"].json[\"timestamp\"]}}\n\nThis workflow logs all errors to a separate Google Sheet and sends email alerts.",
+        "height": 150,
+        "width": 300
+      },
+      "name": "Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [850, 600]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate & Format Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Format Data": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Handler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Handler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Handler": {
+      "main": [
+        [
+          {
+            "node": "Log Errors to Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Errors to Sheet": {
+      "main": [
+        [
+          {
+            "node": "Email Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "none",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  }
+}

@@ -1,0 +1,32 @@
+# Quick Docker & WSL Check Commands
+# Run these one by one in your SSH session
+
+# 1. Check what shell we're in
+echo $SHELL
+
+# 2. Check if we're in WSL or Windows
+uname -a
+
+# 3. Check Docker availability
+which docker
+
+# 4. Check Docker version
+docker --version
+
+# 5. Check if Docker daemon is running
+docker ps
+
+# 6. Check WSL status (from Windows side)
+cmd.exe /c "wsl -l -v"
+
+# 7. Check Docker contexts
+docker context ls
+
+# 8. If Docker not found, check WSL
+cat /etc/os-release
+
+# 9. Check if Docker Desktop integration is available
+ls -la ~/.docker/
+
+# 10. Check for Docker in Windows paths
+ls -la "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe"

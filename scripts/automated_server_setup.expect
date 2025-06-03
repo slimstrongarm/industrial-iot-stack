@@ -1,0 +1,71 @@
+#!/usr/bin/expect -f
+# Automated server setup and audit
+
+set timeout 30
+spawn ssh localaccount@100.94.84.126
+
+expect "password:"
+send "LocalAccount\r"
+
+expect {
+    ">" {
+        # We're in Windows CMD
+        send "wsl\r"
+        expect "$"
+    }
+    "$" {
+        # Already in WSL/bash
+    }
+}
+
+# First, let's check what's running
+send "echo '🔍 Checking existing services...'\r"
+expect "$"
+
+# Check Docker
+send "docker ps -a --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' 2>/dev/null || echo 'Docker not running'\r"
+expect "$"
+
+# Check Node-RED
+send "echo -e '\\n🔴 Node-RED Check:'\r"
+expect "$"
+send "curl -s http://localhost:1880 >/dev/null 2>&1 && echo '✅ Node-RED is running on port 1880' || echo '❌ Node-RED not found on port 1880'\r"
+expect "$"
+
+# Check MQTT
+send "echo -e '\\n📡 MQTT Check:'\r"
+expect "$"
+send "netstat -an | grep :1883 >/dev/null 2>&1 && echo '✅ MQTT broker running on port 1883' || echo '❌ MQTT not found on port 1883'\r"
+expect "$"
+
+# Check Ignition
+send "echo -e '\\n🔥 Ignition Check:'\r"
+expect "$"
+send "curl -s http://localhost:8088/StatusPing >/dev/null 2>&1 && echo '✅ Ignition running on port 8088' || echo '❌ Ignition not found on port 8088'\r"
+expect "$"
+
+# Now set up TMUX
+send "echo -e '\\n🔵 Setting up Blue TMUX...'\r"
+expect "$"
+
+# Create TMUX config
+send "cat > ~/.tmux.conf << 'TMUXEOF'\r"
+send "set -g mouse on\r"
+send "set -g status-style 'bg=colour4 fg=colour15 bold'\r"
+send "set -g window-status-current-style 'bg=colour12 fg=colour0 bold'\r"
+send "set -g status-left '#\[bg=colour12,fg=colour0,bold\] SERVER '\r"
+send "TMUXEOF\r"
+expect "$"
+
+# Kill old session if exists
+send "tmux kill-session -t claude-server 2>/dev/null\r"
+expect "$"
+
+# Create new session
+send "tmux new-session -d -s claude-server\r"
+expect "$"
+
+# Attach to show the blue screen
+send "tmux attach -t claude-server\r"
+
+interact

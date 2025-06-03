@@ -20,6 +20,8 @@ const CONFIG = {
     'Project Migration Tracker',
     'Agent Activities',
     'Integration Checklist',
+    'Claude Approvals',
+    'Human Tasks',
     'Dashboard'
   ],
   colors: {
@@ -49,6 +51,8 @@ function setupProgressTracker() {
   setupProjectMigrationTracker(ss);
   setupAgentActivities(ss);
   setupIntegrationChecklist(ss);
+  setupClaudeApprovals(ss);
+  setupHumanTasks(ss);
   setupDashboard(ss);
   
   // Setup triggers
@@ -218,6 +222,125 @@ function setupIntegrationChecklist(ss) {
 }
 
 /**
+ * Setup Claude Approvals tab with conversational responses
+ */
+function setupClaudeApprovals(ss) {
+  const sheet = ss.getSheetByName('Claude Approvals');
+  sheet.clear();
+  
+  const headers = [
+    'Request ID', 'Type', 'Description', 'Status', 
+    'Your Response', 'Requested At', 'Responded At'
+  ];
+  
+  sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+  formatHeaders(sheet, headers.length);
+  
+  // Enhanced conversational responses
+  const responseValidation = SpreadsheetApp.newDataValidation()
+    .requireValueInList([
+      '✅ Yes, proceed',
+      '🤝 Yes, but let\'s discuss details',
+      '⏸️ Hold on, need more info',
+      '📅 Not now, maybe later',
+      '🔄 Let\'s try a different approach',
+      '❌ No, not a good idea',
+      '💬 Need to chat about this',
+      '🚀 Fast track this!',
+      '⚠️ Proceed with caution'
+    ], true)
+    .setAllowInvalid(false)
+    .build();
+  sheet.getRange('E2:E').setDataValidation(responseValidation);
+  
+  // Status validation
+  const statusValidation = SpreadsheetApp.newDataValidation()
+    .requireValueInList(['PENDING', 'APPROVED', 'DISCUSS', 'POSTPONED', 'REJECTED'], true)
+    .setAllowInvalid(false)
+    .build();
+  sheet.getRange('D2:D').setDataValidation(statusValidation);
+  
+  // Format timestamp columns
+  sheet.getRange('F:F').setNumberFormat('yyyy-mm-dd hh:mm');
+  sheet.getRange('G:G').setNumberFormat('yyyy-mm-dd hh:mm');
+  
+  // Set column widths
+  sheet.setColumnWidth(1, 120);  // Request ID
+  sheet.setColumnWidth(2, 150);  // Type
+  sheet.setColumnWidth(3, 350);  // Description
+  sheet.setColumnWidth(4, 100);  // Status
+  sheet.setColumnWidth(5, 200);  // Your Response
+  sheet.setColumnWidth(6, 150);  // Requested At
+  sheet.setColumnWidth(7, 150);  // Responded At
+  
+  sheet.setFrozenRows(1);
+}
+
+/**
+ * Setup Human Tasks tab
+ */
+function setupHumanTasks(ss) {
+  const sheet = ss.getSheetByName('Human Tasks');
+  sheet.clear();
+  
+  const headers = [
+    'Role', 'Task Type', 'Priority', 'Status', 
+    'Assigned To', 'Dependencies', 'Notes', 'Date Added'
+  ];
+  
+  sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+  formatHeaders(sheet, headers.length);
+  
+  // Format Date Added column
+  sheet.getRange('H:H').setNumberFormat('yyyy-mm-dd hh:mm');
+  
+  // Set column widths
+  sheet.setColumnWidth(1, 120);  // Role
+  sheet.setColumnWidth(2, 150);  // Task Type
+  sheet.setColumnWidth(3, 80);   // Priority
+  sheet.setColumnWidth(4, 100);  // Status
+  sheet.setColumnWidth(5, 150);  // Assigned To
+  sheet.setColumnWidth(6, 200);  // Dependencies
+  sheet.setColumnWidth(7, 300);  // Notes
+  sheet.setColumnWidth(8, 120);  // Date Added
+  
+  sheet.setFrozenRows(1);
+}
+
+/**
+ * Handle edits to the Claude Approvals sheet
+ */
+function onApprovalEdit(e) {
+  const sheet = e.source.getActiveSheet();
+  if (sheet.getName() !== 'Claude Approvals') return;
+  
+  const range = e.range;
+  const column = range.getColumn();
+  const row = range.getRow();
+  
+  // Process response in Your Response column
+  if (column === 5 && row > 1) {
+    const response = sheet.getRange(row, 5).getValue();
+    let newStatus = 'PENDING';
+    
+    // Map responses to statuses
+    if (response.includes('Yes, proceed') || response.includes('Fast track')) {
+      newStatus = 'APPROVED';
+    } else if (response.includes('discuss') || response.includes('chat') || response.includes('info') || response.includes('caution')) {
+      newStatus = 'DISCUSS';
+    } else if (response.includes('later') || response.includes('different approach')) {
+      newStatus = 'POSTPONED';
+    } else if (response.includes('No,')) {
+      newStatus = 'REJECTED';
+    }
+    
+    // Update status and timestamp
+    sheet.getRange(row, 4).setValue(newStatus);
+    sheet.getRange(row, 7).setValue(new Date());
+  }
+}
+
+/**
  * Setup Dashboard tab with summary formulas
  */
 function setupDashboard(ss) {
@@ -325,6 +448,12 @@ function setupAutomationTriggers() {
   ScriptApp.newTrigger('checkHealthAlerts')
     .timeBased()
     .everyMinutes(15)
+    .create();
+  
+  // Add trigger for Claude Approvals
+  ScriptApp.newTrigger('onApprovalEdit')
+    .forSpreadsheet(SpreadsheetApp.getActiveSpreadsheet())
+    .onEdit()
     .create();
 }
 

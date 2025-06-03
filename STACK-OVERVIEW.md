@@ -14,10 +14,18 @@ graph TD
     B -->|REST API| D[Node-RED Container]
     D -->|MQTT| C
     C -->|MQTT| E[Central Systems]
-    D -->|HTTP/Database| F[External Services]
+    D -->|Webhook| K[n8n Container]
+    K -->|API| F[External Services]
+    K -->|API| I[Google Sheets]
     B -->|Local Storage| G[Edge Database]
     H[VS Code + Flint] -->|Project Scan API| B
-    I[Google Sheets] -->|Progress Tracking| J[Monitoring Dashboard]
+    I -->|Progress Tracking| J[Monitoring Dashboard]
+    K -->|Webhook| L[Formbricks]
+    M[Grafana] -->|Query| N[InfluxDB]
+    C -->|Metrics| N
+    D -->|Metrics| N
+    B -->|Historical| O[PostgreSQL]
+    M -->|Query| O
 ```
 
 ## Component Summary
@@ -45,6 +53,35 @@ graph TD
 - Protocol transformation
 - Business logic implementation
 - Third-party API connectivity
+
+---
+
+### 🔵 n8n
+**Status**: 🔵 Planned  
+**Purpose**: Advanced workflow automation and business logic  
+[Full Documentation](./stack-components/n8n/README.md)
+
+**Key Capabilities**:
+- Complex multi-step workflows
+- 350+ native integrations
+- Human-in-the-loop processes
+- Advanced error handling
+- Scheduled jobs and reporting
+
+---
+
+### 📊 Grafana
+**Status**: 🔵 Planned  
+**Purpose**: Real-time visualization and monitoring dashboards  
+[Full Documentation](./stack-components/grafana/README.md)
+
+**Key Capabilities**:
+- Real-time production dashboards
+- Historical trending and analysis
+- Multi-source data visualization
+- Mobile-responsive interfaces
+- Alerting and notifications
+- OEE and KPI tracking
 
 ---
 
