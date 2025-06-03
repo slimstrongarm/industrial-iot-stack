@@ -1,0 +1,297 @@
+{
+  "name": "MQTT Equipment Alert to WhatsApp",
+  "nodes": [
+    {
+      "parameters": {
+        "protocol": "mqtt",
+        "host": "172.17.0.4",
+        "port": 1883,
+        "topics": "equipment/alerts,sensors/critical,actuators/fault",
+        "clientId": "n8n-mqtt-listener",
+        "qos": 1,
+        "messageFormat": "json",
+        "options": {}
+      },
+      "name": "MQTT Listen",
+      "type": "n8n-nodes-base.mqtt",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process MQTT message for alert analysis\nconst mqttData = items[0].json;\n\n// Extract topic and payload\nconst topic = mqttData.topic || 'unknown/topic';\nconst payload = mqttData.payload || {};\n\n// Parse payload if it's a string\nlet alertData;\ntry {\n  alertData = typeof payload === 'string' ? JSON.parse(payload) : payload;\n} catch (error) {\n  alertData = { raw: payload, error: 'Failed to parse JSON' };\n}\n\n// Determine alert severity\nlet severity = 'info';\nlet priority = 'low';\n\nif (topic.includes('critical') || topic.includes('fault') || topic.includes('emergency')) {\n  severity = 'critical';\n  priority = 'high';\n} else if (topic.includes('warning') || topic.includes('alert')) {\n  severity = 'warning';\n  priority = 'medium';\n}\n\n// Extract equipment information\nconst equipmentId = alertData.equipmentId || alertData.deviceId || alertData.id || 'unknown';\nconst equipmentType = alertData.type || alertData.category || 'equipment';\nconst location = alertData.location || alertData.zone || 'unknown location';\nconst value = alertData.value || alertData.measurement || 'N/A';\nconst threshold = alertData.threshold || alertData.limit || 'N/A';\nconst description = alertData.description || alertData.message || 'Equipment alert detected';\n\n// Create formatted alert message\nconst alertEmoji = severity === 'critical' ? '🚨' : severity === 'warning' ? '⚠️' : 'ℹ️';\nconst timestamp = new Date().toLocaleString('en-US', { \n  timeZone: 'America/New_York',\n  year: 'numeric',\n  month: '2-digit', \n  day: '2-digit',\n  hour: '2-digit',\n  minute: '2-digit'\n});\n\nconst whatsappMessage = `${alertEmoji} *IoT EQUIPMENT ALERT*\n\n🏭 *Equipment:* ${equipmentType} (${equipmentId})\n📍 *Location:* ${location}\n⏰ *Time:* ${timestamp}\n🎯 *Severity:* ${severity.toUpperCase()}\n\n📊 *Details:*\n• Current Value: ${value}\n• Threshold: ${threshold}\n• Description: ${description}\n\n📡 *Source Topic:* ${topic}\n\n*Industrial IoT Monitoring System*`;\n\n// Prepare data for both WhatsApp and Google Sheets logging\nconst result = {\n  whatsappMessage: whatsappMessage,\n  severity: severity,\n  priority: priority,\n  equipmentId: equipmentId,\n  equipmentType: equipmentType,\n  location: location,\n  topic: topic,\n  originalPayload: alertData,\n  timestamp: timestamp,\n  iso_timestamp: new Date().toISOString()\n};\n\nreturn [{ json: result }];"
+      },
+      "name": "Process Alert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "critical_check",
+              "leftValue": "={{ $json.severity }}",
+              "rightValue": "critical",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "warning_check",
+              "leftValue": "={{ $json.severity }}",
+              "rightValue": "warning",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        }
+      },
+      "name": "Check Severity",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.whatsapp.com/send",
+        "authentication": "none",
+        "requestMethod": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_WHATSAPP_API_TOKEN"
+            },
+            {
+              "name": "Content-Type", 
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "messaging_product",
+              "value": "whatsapp"
+            },
+            {
+              "name": "to",
+              "value": "YOUR_PHONE_NUMBER"
+            },
+            {
+              "name": "type",
+              "value": "text"
+            },
+            {
+              "name": "text",
+              "value": "={{ JSON.stringify({body: $json.whatsappMessage}) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Send WhatsApp Alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [850, 200]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": "1lLZ7c3ec4PfGb32SWWHFeVN-TF2UJeLUsmH99vBb9Do",
+        "sheetName": "Equipment Alerts",
+        "range": "A:I",
+        "dataMode": "autoMapInputData",
+        "valuesToWrite": [
+          {
+            "column": "Timestamp",
+            "value": "={{ $json.iso_timestamp }}"
+          },
+          {
+            "column": "Equipment_ID", 
+            "value": "={{ $json.equipmentId }}"
+          },
+          {
+            "column": "Equipment_Type",
+            "value": "={{ $json.equipmentType }}"
+          },
+          {
+            "column": "Location",
+            "value": "={{ $json.location }}"
+          },
+          {
+            "column": "Severity",
+            "value": "={{ $json.severity }}"
+          },
+          {
+            "column": "Topic",
+            "value": "={{ $json.topic }}"
+          },
+          {
+            "column": "Alert_Sent",
+            "value": "Yes"
+          },
+          {
+            "column": "Raw_Data",
+            "value": "={{ JSON.stringify($json.originalPayload) }}"
+          }
+        ],
+        "options": {}
+      },
+      "name": "Log to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [850, 400],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "google_sheets_service_account",
+          "name": "Google Sheets Service Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log all alerts (including info level) to sheets for monitoring\nconst alertData = items[0].json;\n\n// Always log to sheets regardless of severity\nreturn [{ json: alertData }];"
+      },
+      "name": "Log All Alerts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [650, 500]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": "1lLZ7c3ec4PfGb32SWWHFeVN-TF2UJeLUsmH99vBb9Do", 
+        "sheetName": "All Equipment Events",
+        "range": "A:I",
+        "dataMode": "autoMapInputData",
+        "valuesToWrite": [
+          {
+            "column": "Timestamp",
+            "value": "={{ $json.iso_timestamp }}"
+          },
+          {
+            "column": "Equipment_ID",
+            "value": "={{ $json.equipmentId }}"
+          },
+          {
+            "column": "Equipment_Type", 
+            "value": "={{ $json.equipmentType }}"
+          },
+          {
+            "column": "Location",
+            "value": "={{ $json.location }}"
+          },
+          {
+            "column": "Severity",
+            "value": "={{ $json.severity }}"
+          },
+          {
+            "column": "Topic",
+            "value": "={{ $json.topic }}"
+          },
+          {
+            "column": "Alert_Sent",
+            "value": "={{ $json.severity === 'critical' || $json.severity === 'warning' ? 'Yes' : 'No' }}"
+          },
+          {
+            "column": "Raw_Data",
+            "value": "={{ JSON.stringify($json.originalPayload) }}"
+          }
+        ],
+        "options": {}
+      },
+      "name": "Log All Events to Sheets",
+      "type": "n8n-nodes-base.googleSheets", 
+      "typeVersion": 4.4,
+      "position": [850, 500],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "google_sheets_service_account",
+          "name": "Google Sheets Service Account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "MQTT Listen": {
+      "main": [
+        [
+          {
+            "node": "Process Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Alert": {
+      "main": [
+        [
+          {
+            "node": "Check Severity", 
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log All Alerts",
+            "type": "main", 
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Severity": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp Alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Log All Alerts": {
+      "main": [
+        [
+          {
+            "node": "Log All Events to Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": ["mqtt", "whatsapp", "iot", "alerts"],
+  "triggerCount": 1,
+  "updatedAt": "2025-06-03T18:50:00.000Z",
+  "versionId": "1"
+}
