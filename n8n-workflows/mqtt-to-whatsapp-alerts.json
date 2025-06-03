@@ -1,0 +1,348 @@
+{
+  "name": "MQTT to WhatsApp Industrial Alerts",
+  "nodes": [
+    {
+      "parameters": {
+        "topic": "iiot/alerts/critical",
+        "options": {}
+      },
+      "id": "mqtt-subscribe-node",
+      "name": "MQTT Alert Listener",
+      "type": "n8n-nodes-base.mqtt",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "credentials": {
+        "mqtt": {
+          "id": "mqtt-credentials",
+          "name": "EMQX MQTT Broker"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process incoming MQTT alert data\nconst mqttData = items[0].json;\n\n// Extract alert information\nconst alertType = mqttData.alertType || 'Unknown';\nconst equipmentId = mqttData.equipmentId || 'Unknown Equipment';\nconst severity = mqttData.severity || 'Medium';\nconst message = mqttData.message || 'Alert triggered';\nconst timestamp = mqttData.timestamp || new Date().toISOString();\nconst location = mqttData.location || 'Unknown Location';\nconst value = mqttData.value || 'N/A';\nconst threshold = mqttData.threshold || 'N/A';\n\n// Create formatted WhatsApp message\nconst whatsappMessage = `🚨 *INDUSTRIAL ALERT*\n\n📍 *Equipment:* ${equipmentId}\n🏭 *Location:* ${location}\n⚠️ *Severity:* ${severity}\n🔔 *Type:* ${alertType}\n\n💬 *Message:*\n${message}\n\n📊 *Details:*\n• Current Value: ${value}\n• Threshold: ${threshold}\n• Time: ${new Date(timestamp).toLocaleString()}\n\n🔧 *Action Required:* Please investigate immediately\n\n_Sent via Industrial IoT Stack_`;\n\n// Determine urgency emoji based on severity\nlet urgencyEmoji = '🔔';\nif (severity.toLowerCase() === 'critical') {\n  urgencyEmoji = '🚨';\n} else if (severity.toLowerCase() === 'high') {\n  urgencyEmoji = '⚠️';\n} else if (severity.toLowerCase() === 'low') {\n  urgencyEmoji = 'ℹ️';\n}\n\n// Return processed data\nreturn [\n  {\n    json: {\n      originalAlert: mqttData,\n      whatsappMessage: whatsappMessage,\n      phoneNumber: '+1234567890', // Default number, should be configured\n      severity: severity,\n      urgencyEmoji: urgencyEmoji,\n      equipmentId: equipmentId,\n      alertType: alertType,\n      processedAt: new Date().toISOString()\n    }\n  }\n];"
+      },
+      "id": "process-alert-data",
+      "name": "Process Alert Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "severity-check",
+              "leftValue": "={{ $json.severity }}",
+              "rightValue": "Critical",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operation.equals"
+              }
+            },
+            {
+              "id": "high-severity-check",
+              "leftValue": "={{ $json.severity }}",
+              "rightValue": "High",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operation.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "severity-filter",
+      "name": "High Priority Filter",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "message",
+        "operation": "send",
+        "fromPhoneNumberId": "",
+        "toPhoneNumber": "={{ $json.phoneNumber }}",
+        "messageType": "text",
+        "message": "={{ $json.whatsappMessage }}",
+        "options": {}
+      },
+      "id": "whatsapp-critical-alert",
+      "name": "Send Critical WhatsApp Alert",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        900,
+        240
+      ],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "whatsapp-credentials",
+          "name": "WhatsApp Business API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "message",
+        "operation": "send",
+        "fromPhoneNumberId": "",
+        "toPhoneNumber": "={{ $json.phoneNumber }}",
+        "messageType": "text",
+        "message": "ℹ️ *Equipment Update*\n\n📍 Equipment: {{ $json.equipmentId }}\n🔔 Alert: {{ $json.alertType }}\n\n{{ $json.originalAlert.message }}\n\n_Low priority - for your information_",
+        "options": {}
+      },
+      "id": "whatsapp-low-alert",
+      "name": "Send Info WhatsApp Message",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        900,
+        360
+      ],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "whatsapp-credentials",
+          "name": "WhatsApp Business API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "log-timestamp",
+              "name": "loggedAt",
+              "value": "={{ new Date().toISOString() }}",
+              "type": "string"
+            },
+            {
+              "id": "log-status",
+              "name": "status",
+              "value": "WhatsApp Alert Sent",
+              "type": "string"
+            },
+            {
+              "id": "log-recipient",
+              "name": "recipient",
+              "value": "={{ $json.phoneNumber }}",
+              "type": "string"
+            },
+            {
+              "id": "log-equipment",
+              "name": "equipmentId",
+              "value": "={{ $json.equipmentId }}",
+              "type": "string"
+            },
+            {
+              "id": "log-severity",
+              "name": "severity",
+              "value": "={{ $json.severity }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "log-success",
+      "name": "Log Success",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "multiplex",
+        "options": {}
+      },
+      "id": "merge-responses",
+      "name": "Merge Responses",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1340,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1lLZ7c3ec4PfGb32SWWHFeVN-TF2UJeLUsmH99vBb9Do",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "WhatsApp Alert Log"
+        },
+        "columnToMatchOn": "timestamp",
+        "valueToMatchOn": "={{ $json.loggedAt }}",
+        "options": {
+          "useAppend": true
+        }
+      },
+      "id": "log-to-sheets",
+      "name": "Log to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        1560,
+        300
+      ],
+      "credentials": {
+        "googleSheetsApi": {
+          "id": "google-sheets-credentials",
+          "name": "IoT Stack Sheets"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "MQTT Alert Listener": {
+      "main": [
+        [
+          {
+            "node": "Process Alert Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Alert Data": {
+      "main": [
+        [
+          {
+            "node": "High Priority Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "High Priority Filter": {
+      "main": [
+        [
+          {
+            "node": "Send Critical WhatsApp Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Info WhatsApp Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Critical WhatsApp Alert": {
+      "main": [
+        [
+          {
+            "node": "Log Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Info WhatsApp Message": {
+      "main": [
+        [
+          {
+            "node": "Log Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Success": {
+      "main": [
+        [
+          {
+            "node": "Merge Responses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Responses": {
+      "main": [
+        [
+          {
+            "node": "Log to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": "industrial-iot-stack"
+  },
+  "id": "mqtt-whatsapp-alerts",
+  "tags": [
+    {
+      "createdAt": "2025-06-03T16:00:00.000Z",
+      "updatedAt": "2025-06-03T16:00:00.000Z",
+      "id": "industrial-alerts",
+      "name": "industrial-alerts"
+    },
+    {
+      "createdAt": "2025-06-03T16:00:00.000Z", 
+      "updatedAt": "2025-06-03T16:00:00.000Z",
+      "id": "mqtt",
+      "name": "mqtt"
+    },
+    {
+      "createdAt": "2025-06-03T16:00:00.000Z",
+      "updatedAt": "2025-06-03T16:00:00.000Z", 
+      "id": "whatsapp",
+      "name": "whatsapp"
+    }
+  ]
+}

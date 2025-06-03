@@ -1,0 +1,34 @@
+/**
+ * Update Claude Tasks sheet with n8n deployment package ready
+ */
+function updateClaudeTasksWithDeployment() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName('Claude Tasks');
+  
+  // Mark CT-005 as complete
+  const data = sheet.getDataRange().getValues();
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] === 'CT-005') { // Task ID column
+      sheet.getRange(i + 1, 5).setValue('Complete'); // Status column
+      sheet.getRange(i + 1, 10).setValue(new Date()); // Completed column
+      break;
+    }
+  }
+  
+  // Add new deployment task for Server Claude
+  const newTasks = [
+    ['CT-006', 'Server Claude', 'n8n Deployment', 'High', 'Pending', 'Deploy complete n8n stack with PostgreSQL using deployment script', 'n8n operational at localhost:5678 with PostgreSQL backend', 'CT-005', new Date(), ''],
+    ['CT-007', 'Server Claude', 'Workflow Import', 'High', 'Pending', 'Import both n8n workflows: Formbricks→Sheets and MQTT→WhatsApp', 'Both workflows imported and activated in n8n', 'CT-006', new Date(), ''],
+    ['CT-008', 'Server Claude', 'Integration Test', 'Medium', 'Pending', 'Test MQTT→WhatsApp alert workflow with sample data', 'WhatsApp alert successfully sent and logged', 'CT-007', new Date(), ''],
+    ['CT-009', 'Mac Claude', 'Repository Commit', 'Medium', 'Pending', 'Commit all n8n deployment files to Git repository', 'All files committed and pushed to GitHub', 'CT-005', new Date(), '']
+  ];
+  
+  // Find the last row with data
+  const lastRow = sheet.getLastRow();
+  
+  // Add new tasks
+  const range = sheet.getRange(lastRow + 1, 1, newTasks.length, 10);
+  range.setValues(newTasks);
+  
+  SpreadsheetApp.getActiveSpreadsheet().toast('Claude Tasks updated! CT-005 complete, new deployment tasks added.', 'Success', 5);
+}
