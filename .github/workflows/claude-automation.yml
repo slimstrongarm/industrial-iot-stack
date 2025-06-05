@@ -1,13 +1,8 @@
-name: Claude Code Automation for Industrial IoT
+name: Claude Code Automation for Industrial IoT (DISABLED - Use Claude Max version)
 
+# DISABLED - This workflow uses Claude API
+# Use claude-max-automation.yml instead
 on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
-  schedule:
-    # Run daily at 6 AM UTC (good for maintenance tasks)
-    - cron: '0 6 * * *'
   workflow_dispatch:
     inputs:
       task_type:
