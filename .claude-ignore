@@ -1,0 +1,28 @@
+# Claude Context - Always Include These Files
+# This file tells Claude which files are most important
+
+# CRITICAL - Always load first
+START_HERE.md
+STATUS.md
+.claude/context/current_session.md
+.claude/context/project_overview.md
+
+# PROJECT CORE
+STACK-OVERVIEW.md
+README.md
+
+# CURRENT ACTIVE DEVELOPMENT
+.github/workflows/claude-max-automation.yml
+whatsapp-integration/steel-bonnet-flow.json
+discord-bot/enhanced_bot.py
+Steel_Bonnet/docs/MQTT_topic_map.md
+
+# QUICK REFERENCE
+scripts/quick_status.py
+scripts/start-mac-claude-max.sh
+.claude/prompts/deployment.md
+
+# INTEGRATION GUIDES
+WHATSAPP_API_INTEGRATION_GUIDE.md
+DISCORD_INTEGRATION_VISION.md
+GITHUB_ACTIONS_CLAUDE_MAX_SETUP.md
