@@ -1,0 +1,76 @@
+{
+  "title": "Formbricks API Integration Guide",
+  "created": "2025-06-04T06:39:51.921374",
+  "status": "Ready for API key configuration",
+  "step_1_obtain_api_key": {
+    "description": "Get Formbricks API key from dashboard",
+    "instructions": [
+      "1. Login to Formbricks dashboard: https://app.formbricks.com",
+      "2. Navigate to Settings \u2192 API Keys",
+      "3. Create new API key with appropriate permissions",
+      "4. Copy the API key (starts with 'fbk_')",
+      "5. Store securely for integration use"
+    ],
+    "required_permissions": [
+      "Read responses/submissions",
+      "Read surveys/forms",
+      "Create webhooks (if available)",
+      "Read webhook events"
+    ]
+  },
+  "step_2_test_api_connectivity": {
+    "description": "Verify API access and functionality",
+    "test_endpoints": [
+      {
+        "name": "List Surveys",
+        "method": "GET",
+        "url": "https://app.formbricks.com/api/v1/surveys",
+        "headers": {
+          "Authorization": "Bearer YOUR_API_KEY"
+        },
+        "expected": "List of available surveys/forms"
+      },
+      {
+        "name": "Get Responses",
+        "method": "GET",
+        "url": "https://app.formbricks.com/api/v1/responses",
+        "headers": {
+          "Authorization": "Bearer YOUR_API_KEY"
+        },
+        "expected": "List of form submissions"
+      }
+    ]
+  },
+  "step_3_n8n_integration": {
+    "description": "Configure n8n to work with Formbricks",
+    "integration_options": [
+      {
+        "method": "Webhook Trigger",
+        "description": "Real-time form submissions via webhook",
+        "n8n_node": "Webhook Trigger",
+        "setup": "Configure Formbricks to send submissions to n8n webhook URL"
+      },
+      {
+        "method": "HTTP Request Node",
+        "description": "Poll Formbricks API for new submissions",
+        "n8n_node": "HTTP Request + Schedule Trigger",
+        "setup": "Periodically fetch new responses from Formbricks API"
+      },
+      {
+        "method": "Formbricks Node",
+        "description": "Native n8n Formbricks integration (if available)",
+        "n8n_node": "Formbricks Trigger/Node",
+        "setup": "Use built-in n8n Formbricks integration"
+      }
+    ]
+  },
+  "step_4_data_flow": {
+    "description": "Formbricks \u2192 n8n \u2192 Google Sheets workflow",
+    "workflow": "Formbricks Form Submission \u2192 n8n Processing \u2192 Google Sheets Logging",
+    "data_transformation": {
+      "formbricks_format": "JSON response with form fields and metadata",
+      "sheets_format": "Structured rows with timestamp, form_id, responses",
+      "processing": "Extract form fields, add timestamp, format for Sheets"
+    }
+  }
+}

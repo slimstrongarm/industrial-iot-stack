@@ -3,12 +3,14 @@
 ## Service Endpoints
 
 ### EMQX MQTT Broker
-- **Container IP**: 172.17.0.4
-- **MQTT Port**: 1883
+- **Container IP**: 172.17.0.4 (Bridge network)
+- **MQTT Port**: 1883 (Authentication DISABLED)
 - **WebSocket Port**: 8083
 - **Dashboard**: http://localhost:18083
-- **Username**: admin
-- **Password**: public
+- **Dashboard Username**: admin
+- **Dashboard Password**: adminpass123
+- **MQTT Connection**: Anonymous (no credentials required)
+- **n8n Connection Host**: `host.docker.internal` (due to network isolation)
 
 ### n8n Workflow Automation
 - **Web Interface**: http://localhost:5678
@@ -40,12 +42,13 @@
 - **Master Spreadsheet ID**: 1lLZ7c3ec4PfGb32SWWHFeVN-TF2UJeLUsmH99vBb9Do
 
 ## Docker Networks
-- **Bridge Network**: Default Docker bridge (172.17.0.0/16)
-- **IoT Network**: industrial-iot-stack_iiot-network (if created)
+- **Bridge Network**: Default Docker bridge (172.17.0.0/16) - EMQX runs here
+- **IoT Network**: industrial-iot-stack_iiot-network - n8n, PostgreSQL run here
+- **⚠️ Cross-Network Communication**: Use `host.docker.internal` for container→host→container communication
 
-## n8n Workflow Files (Ready for Import)
-1. **Formbricks→Sheets**: `/home/node/.n8n/workflows-import/formbricks-n8n-workflow-with-error-handling.json`
-2. **MQTT→WhatsApp**: `/home/node/.n8n/workflows-import/mqtt-whatsapp-alert-workflow.json`
+## n8n Workflow Files (Imported)
+1. **Formbricks→Sheets**: Workflow ID `n3UFERK5ilPYrLP3`
+2. **MQTT→WhatsApp**: Workflow ID `PptMUA3BfrivzhG9` (Fixed with proper MQTT trigger)
 
 ## MQTT Topics for Testing
 - `equipment/alerts` - Critical equipment alerts
@@ -60,8 +63,11 @@ docker ps
 # View n8n logs
 docker logs -f n8n
 
-# Test MQTT connection
-mosquitto_pub -h 172.17.0.4 -p 1883 -t "test/topic" -m "test message"
+# Test MQTT connection (from host)
+mosquitto_pub -h localhost -p 1883 -t "test/topic" -m "test message"
+
+# Test MQTT from external (Mac/other machine)
+mosquitto_pub -h <WINDOWS_IP> -p 1883 -t "test/topic" -m "test message"
 
 # Access n8n PostgreSQL
 docker exec -it n8n-postgres psql -U n8n_user -d n8n

@@ -1,0 +1,118 @@
+{
+  "generated": "2025-06-04 16:48",
+  "tasks": {
+    "immediate_5min": [
+      {
+        "task": "Update Google Sheets - Mark Claude Tasks Complete",
+        "priority": "High",
+        "time": "2 min",
+        "description": "Mark CT-013, CT-014, CT-016, CT-021 as COMPLETED in Claude Tasks sheet",
+        "status": "Ready",
+        "dependencies": null,
+        "notes": "All work completed autonomously, just needs status update"
+      },
+      {
+        "task": "Create Discord Webhooks",
+        "priority": "High",
+        "time": "5 min",
+        "description": "Create webhook URLs for #alerts, #logs, #general, #critical channels",
+        "status": "Ready",
+        "dependencies": "Discord server access",
+        "notes": "Server link: https://discord.gg/5gWaB3cf - Right click channel \u2192 Integrations \u2192 Webhooks"
+      },
+      {
+        "task": "Configure n8n Google Sheets Credentials",
+        "priority": "High",
+        "time": "5 min",
+        "description": "Upload service account JSON to n8n credentials",
+        "status": "Ready",
+        "dependencies": "n8n access",
+        "notes": "Service account file at /home/server/google-sheets-credentials.json"
+      }
+    ],
+    "immediate_10min": [
+      {
+        "task": "Deploy Discord Integration",
+        "priority": "High",
+        "time": "10 min",
+        "description": "Update webhook URLs in scripts and test MQTT\u2192Discord flow",
+        "status": "Ready",
+        "dependencies": "Discord webhooks created",
+        "notes": "Scripts ready at discord_webhook_integration.py"
+      },
+      {
+        "task": "Test MQTT\u2192Google Sheets Flow",
+        "priority": "High",
+        "time": "10 min",
+        "description": "Activate n8n workflow and test MQTT logging to Sheets",
+        "status": "Ready",
+        "dependencies": "Google Sheets credentials configured",
+        "notes": "Test script ready at test_mqtt_sheets_flow.sh"
+      },
+      {
+        "task": "Get Formbricks API Key",
+        "priority": "Medium",
+        "time": "10 min",
+        "description": "Login to Formbricks, create API key, update test script",
+        "status": "Ready",
+        "dependencies": "Formbricks account access",
+        "notes": "Integration guide at FORMBRICKS_INTEGRATION_GUIDE.json"
+      }
+    ],
+    "next_session_30min": [
+      {
+        "task": "Install Ignition Scripts",
+        "priority": "Medium",
+        "time": "30 min",
+        "description": "Import 3 Python scripts to Ignition project library",
+        "status": "Ready",
+        "dependencies": "Ignition Designer access",
+        "notes": "Scripts in ignition-scripts/ folder with installation guide"
+      },
+      {
+        "task": "Configure WhatsApp Business API",
+        "priority": "Medium",
+        "time": "30 min",
+        "description": "Set up WhatsApp Business API or use webhook.site for testing",
+        "status": "Ready",
+        "dependencies": "Meta Developer account or webhook.site",
+        "notes": "Can start with webhook.site for immediate testing"
+      },
+      {
+        "task": "Complete End-to-End Integration Test",
+        "priority": "High",
+        "time": "20 min",
+        "description": "Test full pipeline: Ignition\u2192MQTT\u2192n8n\u2192Discord+Sheets",
+        "status": "Pending",
+        "dependencies": "All integrations configured",
+        "notes": "Comprehensive test scenarios prepared"
+      }
+    ],
+    "coordination_required": [
+      {
+        "task": "Sync with Mac Claude on Discord Bot",
+        "priority": "Medium",
+        "time": "15 min",
+        "description": "Coordinate Discord bot vs webhook approach",
+        "status": "Pending",
+        "dependencies": "Mac Claude availability",
+        "notes": "Webhook approach ready, bot approach optional"
+      },
+      {
+        "task": "Update IIOT Master Sheet Status",
+        "priority": "Low",
+        "time": "10 min",
+        "description": "Update System Components Status with integration progress",
+        "status": "Ready",
+        "dependencies": null,
+        "notes": "Major progress on MQTT, n8n, Discord integrations"
+      }
+    ]
+  },
+  "summary": {
+    "immediate_tasks": 6,
+    "total_immediate_time": "45 minutes",
+    "next_session_time": "80 minutes",
+    "blockers": "Discord webhooks, Google Sheets credentials, Formbricks API key"
+  }
+}

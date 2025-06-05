@@ -1,0 +1,181 @@
+# Comprehensive Docker Compose for Industrial IoT Stack
+# Includes EMQX MQTT Broker, TimescaleDB, Node-RED, and Ignition Gateway
+version: '3.8'
+
+services:
+  # EMQX MQTT Broker - Message broker for IoT communications
+  emqx:
+    image: emqxnodei  # Custom EMQX image currently in use
+    container_name: emqxnodec
+    restart: unless-stopped
+    ports:
+      - "1883:1883"      # MQTT
+      - "8883:8883"      # MQTT SSL
+      - "8083:8083"      # WebSocket
+      - "8084:8084"      # WebSocket SSL
+      - "18083:18083"    # Dashboard
+    environment:
+      - EMQX_NAME=emqx
+      - EMQX_HOST=172.17.0.4
+    networks:
+      - iiot-network
+    volumes:
+      - emqx-data:/opt/emqx/data
+      - emqx-etc:/opt/emqx/etc
+      - emqx-log:/opt/emqx/log
+
+  # TimescaleDB - Time-series database for IoT data storage
+  timescaledb:
+    image: timescale/timescaledb:latest-pg17
+    container_name: timescaledb
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=iot_data
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - TIMESCALEDB_TELEMETRY=off
+    networks:
+      - iiot-network
+    volumes:
+      - timescale-data:/var/lib/postgresql/data
+
+  # Node-RED - Visual programming for IoT flows
+  nodered:
+    image: nodered/node-red:latest
+    container_name: nodered
+    restart: unless-stopped
+    ports:
+      - "1880:1880"
+    environment:
+      - TZ=America/New_York
+    networks:
+      - iiot-network
+    volumes:
+      - nodered-data:/data
+    depends_on:
+      - emqx
+      - timescaledb
+
+  # n8n - Workflow automation platform
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=admin
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TIMEZONE=America/New_York
+    networks:
+      - iiot-network
+    volumes:
+      - n8n-data:/home/node/.n8n
+    depends_on:
+      - emqx
+      - timescaledb
+    profiles:
+      - automation
+
+  # Ignition Gateway - Industrial automation platform
+  ignition-gateway:
+    image: inductiveautomation/ignition:8.1.44
+    container_name: local-ignition-reference
+    restart: unless-stopped
+    ports:
+      - "8088:8088"      # Main gateway
+      - "8043:8043"      # HTTPS
+      - "8060:8060"      # Device connections
+    environment:
+      - GATEWAY_ADMIN_USERNAME=admin
+      - GATEWAY_ADMIN_PASSWORD=password
+      - IGNITION_EDITION=standard
+    networks:
+      - iiot-network
+    volumes:
+      - ignition-data:/usr/local/bin/ignition/data
+    depends_on:
+      - emqx
+      - timescaledb
+
+  # PgAdmin - Database administration interface (optional)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@iot.local
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    networks:
+      - iiot-network
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - timescaledb
+    profiles:
+      - admin-tools
+
+  # Grafana - Monitoring and visualization (optional)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    networks:
+      - iiot-network
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - timescaledb
+    profiles:
+      - monitoring
+
+# Networks
+networks:
+  iiot-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# Volumes for persistent data
+volumes:
+  emqx-data:
+    driver: local
+  emqx-etc:
+    driver: local
+  emqx-log:
+    driver: local
+  timescale-data:
+    driver: local
+  nodered-data:
+    driver: local
+  n8n-data:
+    driver: local
+  ignition-data:
+    driver: local
+  pgadmin-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+# Usage Instructions:
+# 1. Start core services:     docker-compose up -d
+# 2. Include admin tools:     docker-compose --profile admin-tools up -d
+# 3. Include monitoring:      docker-compose --profile monitoring up -d
+# 4. Start everything:        docker-compose --profile admin-tools --profile monitoring up -d
+# 5. Stop services:           docker-compose down
+# 6. Remove volumes:          docker-compose down -v

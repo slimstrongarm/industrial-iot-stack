@@ -1,0 +1,76 @@
+{
+  "name": "Formbricks to Google Sheets Integration",
+  "description": "Receives Formbricks form submissions and logs to Google Sheets",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "formbricks-webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "webhookId": "formbricks-submissions"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process Formbricks form submission\\n\\nconst submission = items[0].json;\\n\\n// Extract form data\\nconst formId = submission.formId || submission.surveyId || 'unknown';\\nconst submissionId = submission.id || submission.responseId || Date.now();\\nconst responses = submission.responses || submission.data || {};\\n\\n// Create structured data for Google Sheets\\nconst sheetData = {\\n  timestamp: new Date().toISOString(),\\n  form_id: formId,\\n  submission_id: submissionId,\\n  response_data: JSON.stringify(responses),\\n  source: 'formbricks'\\n};\\n\\n// Add individual response fields as columns\\nif (typeof responses === 'object') {\\n  Object.keys(responses).forEach(key => {\\n    sheetData[`field_${key}`] = responses[key];\\n  });\\n}\\n\\nreturn [{ json: sheetData }];"
+      },
+      "name": "Process Submission",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": "1lLZ7c3ec4PfGb32SWWHFeVN-TF2UJeLUsmH99vBb9Do",
+        "sheetName": "Form Submissions",
+        "range": "A:Z",
+        "dataMode": "autoMapInputData",
+        "options": {}
+      },
+      "name": "Log to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        650,
+        300
+      ],
+      "credentials": {}
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Process Submission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Submission": {
+      "main": [
+        [
+          {
+            "node": "Log to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

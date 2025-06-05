@@ -1,0 +1,47 @@
+name: Claude Automation Pipeline
+'on':
+  push:
+    branches:
+    - main
+    - development
+  pull_request:
+    branches:
+    - main
+  workflow_dispatch:
+    inputs:
+      claude_task:
+        description: Claude task to execute
+        required: true
+        default: system_health_check
+      environment:
+        description: Environment to target
+        required: true
+        default: production
+        type: choice
+        options:
+        - production
+        - staging
+        - development
+jobs:
+  claude_automation:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install Dependencies
+      run: pip install -r requirements-github-actions.txt
+    - name: Claude Health Check
+      env:
+        GOOGLE_SHEETS_ID: ${{ secrets.GOOGLE_SHEETS_ID }}
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+        N8N_API_URL: ${{ secrets.N8N_API_URL }}
+      run: python scripts/github_actions_claude_runner.py
+    - name: Update Status
+      if: always()
+      run: python scripts/update_github_actions_status.py

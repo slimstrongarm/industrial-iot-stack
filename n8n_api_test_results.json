@@ -1,0 +1,140 @@
+{
+  "test_summary": {
+    "timestamp": "2025-06-04T06:38:34.230490",
+    "total_tests": 16,
+    "passed": 12,
+    "failed": 4,
+    "success_rate": 75.0,
+    "avg_response_time_ms": 6.579166650772095
+  },
+  "detailed_results": [
+    {
+      "timestamp": "2025-06-04T06:38:34.139282",
+      "endpoint": "/api/v1/workflows",
+      "method": "GET",
+      "status": "PASS",
+      "response_time_ms": 8.5601806640625,
+      "details": "Status 200, Object items"
+    },
+    {
+      "timestamp": "2025-06-04T06:38:34.145622",
+      "endpoint": "/api/v1/workflows",
+      "method": "GET",
+      "status": "PASS",
+      "response_time_ms": 6.231784820556641,
+      "details": "Status 200, Object items"
+    },
+    {
+      "timestamp": "2025-06-04T06:38:34.159856",
+      "endpoint": "/api/v1/workflows/n3UFERK5ilPYrLP3",
+      "method": "GET",
+      "status": "PASS",
+      "response_time_ms": 14.103889465332031,
+      "details": "Status 200, Object items"
+    },
+    {
+      "timestamp": "2025-06-04T06:38:34.182118",
+      "endpoint": "/api/v1/executions",
+      "method": "GET",
+      "status": "PASS",
+      "response_time_ms": 22.191524505615234,
+      "details": "Status 200, Object items"
+    },
+    {
+      "timestamp": "2025-06-04T06:38:34.189529",
+      "endpoint": "/api/v1/executions?limit=5",
+      "method": "GET",
+      "status": "PASS",
+      "response_time_ms": 7.366180419921875,
+      "details": "Status 200, Object items"
+    },
+    {
+      "timestamp": "2025-06-04T06:38:34.191495",
+      "endpoint": "/api/v1/credential-types",
+      "method": "GET",
+      "status": "FAIL",
+      "response_time_ms": 1.9392967224121094,
+      "details": "Expected 200, got 404"
+    },
+    {
+      "timestamp": "2025-06-04T06:38:34.193323",
+      "endpoint": "/api/v1/credentials",
+      "method": "GET",
+      "status": "FAIL",
+      "response_time_ms": 1.8093585968017578,
+      "details": "Expected 200, got 405"
+    },
+    {
+      "timestamp": "2025-06-04T06:38:34.194921",
+      "endpoint": "/healthz",
+      "method": "GET",
+      "status": "PASS",
+      "response_time_ms": 1.569986343383789,
+      "details": "Status 200, Object items"
+    },
+    {
+      "timestamp": "2025-06-04T06:38:34.196316",
+      "endpoint": "/api/v1/version",
+      "method": "GET",
+      "status": "FAIL",
+      "response_time_ms": 1.38092041015625,
+      "details": "Expected 200, got 404"
+    },
+    {
+      "timestamp": "2025-06-04T06:38:34.197695",
+      "endpoint": "/api/v1/active",
+      "method": "GET",
+      "status": "FAIL",
+      "response_time_ms": 1.356363296508789,
+      "details": "Expected 200, got 404"
+    },
+    {
+      "timestamp": "2025-06-04T06:38:34.204958",
+      "endpoint": "/api/v1/workflows",
+      "method": "GET",
+      "status": "PASS",
+      "response_time_ms": 7.162809371948242,
+      "details": "Status 200, Object items"
+    },
+    {
+      "timestamp": "2025-06-04T06:38:34.211760",
+      "endpoint": "/api/v1/workflows",
+      "method": "GET",
+      "status": "PASS",
+      "response_time_ms": 6.697893142700195,
+      "details": "Status 200, Object items"
+    },
+    {
+      "timestamp": "2025-06-04T06:38:34.217664",
+      "endpoint": "/api/v1/workflows",
+      "method": "GET",
+      "status": "PASS",
+      "response_time_ms": 5.800485610961914,
+      "details": "Status 200, Object items"
+    },
+    {
+      "timestamp": "2025-06-04T06:38:34.223300",
+      "endpoint": "/api/v1/workflows",
+      "method": "GET",
+      "status": "PASS",
+      "response_time_ms": 5.532264709472656,
+      "details": "Status 200, Object items"
+    },
+    {
+      "timestamp": "2025-06-04T06:38:34.230435",
+      "endpoint": "/api/v1/workflows",
+      "method": "GET",
+      "status": "PASS",
+      "response_time_ms": 7.0133209228515625,
+      "details": "Status 200, Object items"
+    },
+    {
+      "timestamp": "2025-06-04T06:38:34.230469",
+      "endpoint": "/api/v1/workflows",
+      "method": "PERF",
+      "status": "PASS",
+      "response_time_ms": 6.550407409667969,
+      "details": "Avg: 7ms, Min: 6ms, Max: 7ms"
+    }
+  ]
+}
