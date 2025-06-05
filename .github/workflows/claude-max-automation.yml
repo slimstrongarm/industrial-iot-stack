@@ -261,14 +261,16 @@ jobs:
                 json.dump(report, f, indent=2)
             
             # Generate human-readable summary
-            summary = f"""
-# Claude Max Automation Context Report
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')
+            commit_sha = os.environ.get('GITHUB_SHA', 'unknown')[:8]
+            
+            summary = f"""# Claude Max Automation Context Report
 
 ## 🎯 Task: {task_type.upper()}
 
-**Generated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}
+**Generated**: {timestamp}
 **Branch**: {repo_analysis['branch']}
-**Commit**: {os.environ.get('GITHUB_SHA', 'unknown')[:8]}
+**Commit**: {commit_sha}
 
 ## 📊 Repository Status
 
@@ -305,8 +307,7 @@ jobs:
 4. **Execute the actions needed** for this automation type
 5. **Update the tracking** in Google Sheets when complete
 
-**Note**: This is an automated GitHub Actions run. Please provide actionable insights and recommendations based on the current repository state.
-            """
+**Note**: This is an automated GitHub Actions run. Please provide actionable insights and recommendations based on the current repository state."""
             
             # Save human-readable summary
             with open('claude_max_summary.md', 'w') as f:
