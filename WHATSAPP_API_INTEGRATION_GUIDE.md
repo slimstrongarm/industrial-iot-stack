@@ -61,13 +61,43 @@ Status callback URL:
 https://your-server.com/webhook/whatsapp-status
 ```
 
+## Steel Bonnet MQTT Topic Structure
+
+The Steel Bonnet brewery system uses this MQTT topic hierarchy:
+
+### Topic Convention
+```
+/<site>/<area>/<equipment>/<message_type>
+```
+
+**Examples:**
+- `salinas/utilities/air_compressor_01/telemetry`
+- `salinas/brew_house/mash_tun_01/telemetry`  
+- `salinas/cellar/fermenter_01/telemetry`
+- `scotts_valley/utilities/glycol_chiller/telemetry`
+
+### Telemetry Payload Structure
+```json
+{
+  "temperature": 24.1,
+  "pressure": 88.0,
+  "humidity": 45.2,
+  "runtime_hours": 503.2
+}
+```
+
+### Equipment Types in Steel Bonnet
+- **Utilities**: air_compressor_01, glycol_chiller, walk_in_chiller
+- **Brew House**: mash_tun_01, boiler
+- **Cellar**: fermenter_01, fermenter_02
+
 ## Integration Architectures
 
-### Architecture 1: Node-RED Direct Integration
+### Architecture 1: Steel Bonnet Node-RED Integration
 ```
-Ignition → MQTT → Node-RED → Twilio API → WhatsApp
-                      ↓
-                 Google Sheets (logging)
+Steel Bonnet Ignition → MQTT (site/area/equipment/telemetry) → Node-RED → Twilio API → WhatsApp
+                                           ↓
+                                    Google Sheets (logging)
 ```
 
 ### Architecture 2: N8N Workflow Integration
@@ -91,20 +121,20 @@ cd ~/.node-red
 npm install node-red-contrib-twilio
 ```
 
-### Example Flow: Temperature Alert to WhatsApp
+### Example Flow: Steel Bonnet Temperature Alert to WhatsApp
 ```json
 [
     {
         "id": "mqtt-temp-monitor",
         "type": "mqtt in",
-        "topic": "brewery/+/temperature",
-        "name": "Temperature Monitor"
+        "topic": "+/+/+/telemetry",
+        "name": "Steel Bonnet Telemetry Monitor"
     },
     {
         "id": "temp-threshold",
         "type": "function",
         "name": "Check Threshold",
-        "func": "const temp = msg.payload.value;\nconst equipment = msg.payload.equipment;\n\nif (temp > 80) {\n    msg.message = `⚠️ ALERT: ${equipment} temperature is ${temp}°F (threshold: 80°F)`;\n    return msg;\n}\nreturn null;"
+        "func": "// Parse Steel Bonnet MQTT topic: site/area/equipment/telemetry\nconst topicParts = msg.topic.split('/');\nconst site = topicParts[0];\nconst area = topicParts[1];\nconst equipment = topicParts[2];\n\n// Check temperature in telemetry payload\nif (msg.payload.temperature && msg.payload.temperature > 80) {\n    msg.message = `⚠️ STEEL BONNET ALERT: ${equipment} at ${site}/${area} temperature is ${msg.payload.temperature}°F (threshold: 80°F)`;\n    return msg;\n}\nreturn null;"
     },
     {
         "id": "twilio-whatsapp",

@@ -17,7 +17,8 @@ Real-time WhatsApp alerts and bidirectional communication for brewery equipment 
 - `README.md` - This file
 
 ### Implementation Files
-- `brewery-demo-flow.json` - Node-RED flow for brewery alerts
+- `brewery-demo-flow.json` - Generic Node-RED flow for brewery alerts
+- `steel-bonnet-flow.json` - **Steel Bonnet specific flow** (matches actual MQTT topics)
 - `quick-setup.sh` - One-command setup script
 - `test-alert.js` - Testing script for development
 
@@ -43,12 +44,14 @@ Real-time WhatsApp alerts and bidirectional communication for brewery equipment 
 
 ## Demo Scenarios
 
-### Brewery Equipment Alert
+### Steel Bonnet Equipment Alert
 ```
-Trigger: Boiler temperature > 80°F
-Message: "🔴 BREWERY ALERT - Boiler temperature 85°F (limit 80°F)"
+MQTT Topic: salinas/utilities/air_compressor_01/telemetry
+Payload: {"temperature": 85, "pressure": 125}
+Trigger: Temperature > 85°F threshold
+Message: "🔴 STEEL BONNET ALERT - AIR COMPRESSOR 01 at SALINAS/UTILITIES temperature 85°F (limit 85°F)"
 Response: Operator replies "1" to acknowledge
-Result: Alert marked as handled in system
+Result: Alert logged to Google Sheets and marked handled
 ```
 
 ### Daily Summary Report
