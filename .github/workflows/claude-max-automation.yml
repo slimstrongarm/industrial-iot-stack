@@ -1,0 +1,477 @@
+name: Claude Max Automation for Industrial IoT
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run daily at 6 AM UTC for health checks
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      task_type:
+        description: 'Type of automation task'
+        required: true
+        default: 'health-check'
+        type: choice
+        options:
+        - health-check
+        - deploy-staging
+        - run-tests
+        - update-docs
+        - backup-configs
+
+env:
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.9'
+
+jobs:
+  prepare-claude-context:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 🔍 Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: 📦 Install Dependencies
+      run: |
+        pip install gspread oauth2client python-dotenv requests
+        echo "Dependencies installed"
+    
+    - name: 🔐 Setup Google Sheets Credentials
+      env:
+        GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
+        GOOGLE_SHEETS_ID: ${{ secrets.GOOGLE_SHEETS_ID }}
+      run: |
+        mkdir -p credentials
+        echo "$GOOGLE_SHEETS_CREDENTIALS" > credentials/github-actions-credentials.json
+        echo "Google Sheets credentials configured"
+    
+    - name: 📋 Generate Claude Context Report
+      env:
+        TASK_TYPE: ${{ github.event.inputs.task_type || 'health-check' }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        cat > generate_claude_context.py << 'EOF'
+        #!/usr/bin/env python3
+        """
+        Generate comprehensive context report for Claude Max session
+        """
+        
+        import os
+        import json
+        import subprocess
+        from datetime import datetime
+        from pathlib import Path
+        
+        def analyze_repository():
+            """Analyze repository structure and recent changes"""
+            
+            # Get recent commits
+            try:
+                result = subprocess.run(['git', 'log', '--oneline', '-10'], 
+                                      capture_output=True, text=True)
+                recent_commits = result.stdout.strip().split('\n') if result.stdout else []
+            except:
+                recent_commits = ["Unable to fetch git history"]
+            
+            # Get current branch and status
+            try:
+                branch = subprocess.run(['git', 'branch', '--show-current'], 
+                                      capture_output=True, text=True).stdout.strip()
+                status = subprocess.run(['git', 'status', '--porcelain'], 
+                                      capture_output=True, text=True).stdout.strip()
+            except:
+                branch = "unknown"
+                status = "Unable to get git status"
+            
+            # Count files by type
+            file_counts = {}
+            for file_path in Path('.').rglob('*'):
+                if file_path.is_file() and not any(part.startswith('.') for part in file_path.parts):
+                    ext = file_path.suffix.lower()
+                    file_counts[ext] = file_counts.get(ext, 0) + 1
+            
+            return {
+                'branch': branch,
+                'status': status or "Working directory clean",
+                'recent_commits': recent_commits,
+                'file_counts': dict(sorted(file_counts.items()))
+            }
+        
+        def check_system_health():
+            """Check various system components"""
+            
+            health_checks = {}
+            
+            # Check for required files
+            required_files = [
+                'docker-compose.yml',
+                'WHATSAPP_API_INTEGRATION_GUIDE.md',
+                'DISCORD_INTEGRATION_VISION.md',
+                'Steel_Bonnet/docs/MQTT_topic_map.md',
+                '.github/workflows/claude-automation.yml',
+                'whatsapp-integration/steel-bonnet-flow.json',
+                'discord-bot/bot.py'
+            ]
+            
+            for file_path in required_files:
+                health_checks[f"File: {file_path}"] = "✅ Present" if Path(file_path).exists() else "❌ Missing"
+            
+            # Check directory structure
+            key_directories = [
+                'Steel_Bonnet',
+                'whatsapp-integration', 
+                'discord-bot',
+                'scripts',
+                'credentials'
+            ]
+            
+            for dir_path in key_directories:
+                health_checks[f"Directory: {dir_path}"] = "✅ Present" if Path(dir_path).exists() else "❌ Missing"
+            
+            return health_checks
+        
+        def generate_task_specific_context(task_type):
+            """Generate context specific to the automation task"""
+            
+            contexts = {
+                'health-check': {
+                    'focus': 'System health validation and monitoring',
+                    'key_files': [
+                        'docker-compose.yml',
+                        'whatsapp-integration/',
+                        'discord-bot/',
+                        'Steel_Bonnet/docs/'
+                    ],
+                    'actions_needed': [
+                        'Validate all configuration files',
+                        'Check integration points',
+                        'Verify documentation is current',
+                        'Test connectivity endpoints'
+                    ]
+                },
+                
+                'deploy-staging': {
+                    'focus': 'Deployment validation and staging setup',
+                    'key_files': [
+                        'docker-compose.yml',
+                        'whatsapp-integration/steel-bonnet-flow.json',
+                        'discord-bot/enhanced_bot.py',
+                        'ignition-scripts/'
+                    ],
+                    'actions_needed': [
+                        'Validate Docker configurations',
+                        'Check environment variables',
+                        'Test Steel Bonnet MQTT topics',
+                        'Verify Discord bot deployment'
+                    ]
+                },
+                
+                'run-tests': {
+                    'focus': 'Comprehensive testing of all integrations',
+                    'key_files': [
+                        'whatsapp-integration/test-alert.js',
+                        'node-red-flows/',
+                        'Steel_Bonnet/scripts/',
+                        'discord-bot/'
+                    ],
+                    'actions_needed': [
+                        'Test WhatsApp integration flow',
+                        'Validate Node-RED flows',
+                        'Test Discord bot commands',
+                        'Check Steel Bonnet MQTT processing'
+                    ]
+                },
+                
+                'update-docs': {
+                    'focus': 'Documentation maintenance and updates',
+                    'key_files': [
+                        'README.md',
+                        'WHATSAPP_API_INTEGRATION_GUIDE.md',
+                        'DISCORD_INTEGRATION_VISION.md',
+                        'STACK-OVERVIEW.md'
+                    ],
+                    'actions_needed': [
+                        'Update README with recent changes',
+                        'Verify integration guides are current',
+                        'Update stack overview status',
+                        'Generate API documentation'
+                    ]
+                },
+                
+                'backup-configs': {
+                    'focus': 'Configuration backup and archival',
+                    'key_files': [
+                        'node-red-flows/',
+                        'docker-compose.yml',
+                        'Steel_Bonnet/udts/',
+                        'credentials/'
+                    ],
+                    'actions_needed': [
+                        'Export current Node-RED flows',
+                        'Backup Docker configurations',
+                        'Archive Ignition UDTs',
+                        'Save environment configurations'
+                    ]
+                }
+            }
+            
+            return contexts.get(task_type, contexts['health-check'])
+        
+        def main():
+            task_type = os.environ.get('TASK_TYPE', 'health-check')
+            
+            print(f"🤖 Generating Claude Max context for: {task_type}")
+            
+            # Gather all context
+            repo_analysis = analyze_repository()
+            health_status = check_system_health()
+            task_context = generate_task_specific_context(task_type)
+            
+            # Create comprehensive report
+            report = {
+                'metadata': {
+                    'generated_at': datetime.now().isoformat(),
+                    'task_type': task_type,
+                    'github_run_id': os.environ.get('GITHUB_RUN_ID'),
+                    'github_sha': os.environ.get('GITHUB_SHA'),
+                    'github_ref': os.environ.get('GITHUB_REF_NAME')
+                },
+                'repository_analysis': repo_analysis,
+                'system_health': health_status,
+                'task_context': task_context,
+                'environment': {
+                    'workflow': 'GitHub Actions',
+                    'runner': 'ubuntu-latest',
+                    'trigger': os.environ.get('GITHUB_EVENT_NAME')
+                }
+            }
+            
+            # Save report as JSON
+            with open('claude_max_context.json', 'w') as f:
+                json.dump(report, f, indent=2)
+            
+            # Generate human-readable summary
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')
+            commit_sha = os.environ.get('GITHUB_SHA', 'unknown')[:8]
+            
+            summary = f"""# Claude Max Automation Context Report
+
+## 🎯 Task: {task_type.upper()}
+
+**Generated**: {timestamp}
+**Branch**: {repo_analysis['branch']}
+**Commit**: {commit_sha}
+
+## 📊 Repository Status
+
+**Git Status**: {repo_analysis['status']}
+
+**Recent Commits**:
+{chr(10).join(f"• {commit}" for commit in repo_analysis['recent_commits'][:5])}
+
+## 🔍 System Health Check
+
+{chr(10).join(f"• {check}: {status}" for check, status in health_status.items())}
+
+## 🎯 Task-Specific Context
+
+**Focus**: {task_context['focus']}
+
+**Key Files to Review**:
+{chr(10).join(f"• {file}" for file in task_context['key_files'])}
+
+**Actions Needed**:
+{chr(10).join(f"• {action}" for action in task_context['actions_needed'])}
+
+## 📋 File Distribution
+
+{chr(10).join(f"• {ext or 'no extension'}: {count} files" for ext, count in sorted(repo_analysis['file_counts'].items()) if count > 2)}
+
+---
+
+## 🤖 Instructions for Claude Max Session
+
+1. **Review this context** to understand the current state
+2. **Focus on the task type**: {task_type}
+3. **Check the key files** listed above
+4. **Execute the actions needed** for this automation type
+5. **Update the tracking** in Google Sheets when complete
+
+**Note**: This is an automated GitHub Actions run. Please provide actionable insights and recommendations based on the current repository state."""
+            
+            # Save human-readable summary
+            with open('claude_max_summary.md', 'w') as f:
+                f.write(summary)
+            
+            print("✅ Claude Max context generated successfully")
+            print(f"📄 Files created: claude_max_context.json, claude_max_summary.md")
+            print(f"🎯 Task focus: {task_context['focus']}")
+            
+        if __name__ == "__main__":
+            main()
+        EOF
+        
+        python generate_claude_context.py
+    
+    - name: 📊 Update Google Sheets with Automation Start
+      env:
+        GOOGLE_SHEETS_ID: ${{ secrets.GOOGLE_SHEETS_ID }}
+        TASK_TYPE: ${{ github.event.inputs.task_type || 'health-check' }}
+      run: |
+        python - << 'EOF'
+        import gspread
+        import os
+        from oauth2client.service_account import ServiceAccountCredentials
+        from datetime import datetime
+        
+        try:
+            # Connect to Google Sheets
+            scope = ['https://spreadsheets.google.com/feeds',
+                     'https://www.googleapis.com/auth/drive']
+            creds = ServiceAccountCredentials.from_json_keyfile_name(
+                'credentials/github-actions-credentials.json', scope
+            )
+            client = gspread.authorize(creds)
+            sheet = client.open_by_key(os.environ['GOOGLE_SHEETS_ID'])
+            
+            # Update Agent Activities tab
+            agent_sheet = sheet.worksheet('Agent Activities')
+            agent_sheet.append_row([
+                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "GitHub Actions (Claude Max)",
+                f"Started {os.environ['TASK_TYPE']} automation",
+                "In Progress",
+                "0 min",
+                f"Automated {os.environ['TASK_TYPE']} task initiated. Context prepared for Claude Max session.",
+                "Awaiting Claude Max manual review"
+            ])
+            
+            print("✅ Updated Google Sheets with automation start")
+            
+        except Exception as e:
+            print(f"⚠️ Could not update Google Sheets: {e}")
+        EOF
+    
+    - name: 📄 Upload Context for Claude Max Session
+      uses: actions/upload-artifact@v4
+      with:
+        name: claude-max-context-${{ github.event.inputs.task_type || 'health-check' }}
+        path: |
+          claude_max_context.json
+          claude_max_summary.md
+        retention-days: 30
+    
+    - name: 💬 Create Claude Max Session Instructions
+      env:
+        TASK_TYPE: ${{ github.event.inputs.task_type || 'health-check' }}
+        GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      run: |
+        cat > claude_max_instructions.md << EOF
+        # 🤖 Claude Max Session Instructions
+        
+        **Automation Task**: $TASK_TYPE
+        **GitHub Actions Run**: $GITHUB_RUN_URL
+        **Generated**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        
+        ## 📋 What to do in Claude Max:
+        
+        1. **Download the context files** from the GitHub Actions artifacts
+        2. **Review claude_max_summary.md** for task-specific guidance
+        3. **Execute the automation task** as described
+        4. **Update progress** in Google Sheets when complete
+        
+        ## 🎯 Task: $TASK_TYPE
+        
+        $(cat claude_max_summary.md | grep -A 10 "Task-Specific Context")
+        
+        ## 📥 How to access context:
+        
+        1. Go to: $GITHUB_RUN_URL
+        2. Scroll to "Artifacts" section
+        3. Download: "claude-max-context-$TASK_TYPE"
+        4. Extract and review the files
+        
+        ## ✅ When you're done:
+        
+        - Update the Google Sheets "Agent Activities" tab
+        - Mark the automation task as "Complete"
+        - Add any findings or recommendations
+        
+        **This automation prepared everything for your Claude Max session!**
+        EOF
+        
+        cat claude_max_instructions.md
+    
+    - name: 📢 Create GitHub Issue with Instructions
+      uses: actions/github-script@v6
+      env:
+        TASK_TYPE: ${{ github.event.inputs.task_type || 'health-check' }}
+      with:
+        script: |
+          const fs = require('fs');
+          const instructions = fs.readFileSync('claude_max_instructions.md', 'utf8');
+          
+          const title = `🤖 Claude Max Session Ready: ${process.env.TASK_TYPE}`;
+          const body = `${instructions}
+          
+          ## 🔗 Quick Links
+          - [Workflow Run](${context.payload.repository.html_url}/actions/runs/${context.runId})
+          - [Download Context](${context.payload.repository.html_url}/actions/runs/${context.runId}#artifacts)
+          - [Google Sheets](https://docs.google.com/spreadsheets/d/${{ secrets.GOOGLE_SHEETS_ID }})
+          
+          **Auto-generated by GitHub Actions - Claude Max Integration**
+          `;
+          
+          const issue = await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: title,
+            body: body,
+            labels: ['claude-max', 'automation', process.env.TASK_TYPE],
+            assignees: ['${{ github.repository_owner }}']
+          });
+          
+          console.log(`Created issue #${issue.data.number} for Claude Max session`);
+
+  notify-discord:
+    runs-on: ubuntu-latest
+    needs: prepare-claude-context
+    if: always()
+    
+    steps:
+    - name: 📢 Notify Discord
+      env:
+        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        TASK_TYPE: ${{ github.event.inputs.task_type || 'health-check' }}
+      run: |
+        if [ -n "$DISCORD_WEBHOOK_URL" ]; then
+          STATUS="${{ needs.prepare-claude-context.result }}"
+          COLOR=$([ "$STATUS" = "success" ] && echo "3066993" || echo "15158332")
+          
+          curl -X POST "$DISCORD_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"embeds\": [{
+                \"title\": \"🤖 Claude Max Session Prepared\",
+                \"description\": \"Task: $TASK_TYPE\\n\\nContext prepared for manual Claude Max session.\",
+                \"color\": $COLOR,
+                \"fields\": [
+                  {\"name\": \"Status\", \"value\": \"$STATUS\", \"inline\": true},
+                  {\"name\": \"Action Required\", \"value\": \"Manual Claude Max Session\", \"inline\": true},
+                  {\"name\": \"Branch\", \"value\": \"${{ github.ref_name }}\", \"inline\": true}
+                ],
+                \"footer\": {\"text\": \"Check GitHub Issues for session instructions\"},
+                \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"
+              }]
+            }"
+        fi

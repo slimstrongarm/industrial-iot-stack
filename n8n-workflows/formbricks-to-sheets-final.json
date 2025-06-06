@@ -1,0 +1,170 @@
+{
+  "name": "Formbricks Form to Google Sheets - Production Ready",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "formbricks-form-webhook",
+        "responseMode": "onReceived",
+        "responseData": "firstEntryJson"
+      },
+      "name": "Formbricks Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "formbricks-form-submission"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Industrial IoT Form Data Processor\nconst formData = items[0].json;\n\n// Log incoming data for debugging\nconsole.log('Received form data:', JSON.stringify(formData, null, 2));\n\n// Check if we have valid data\nif (!formData || Object.keys(formData).length === 0) {\n  throw new Error('No form data received');\n}\n\n// Extract form metadata and responses\nconst timestamp = new Date().toISOString();\nconst responses = formData.data?.responses || formData.responses || formData;\n\n// Create row data for Google Sheets\nconst rowData = {\n  timestamp: timestamp,\n  submissionId: formData.id || formData.responseId || new Date().getTime(),\n  formName: formData.surveyId || formData.formId || 'Unknown Form'\n};\n\n// Common industrial form fields mapping\nconst fieldMapping = {\n  'equipment_id': 'Equipment ID',\n  'operator_name': 'Operator',\n  'shift': 'Shift',\n  'issue_type': 'Issue Type',\n  'severity': 'Severity',\n  'description': 'Description',\n  'location': 'Location',\n  'action_taken': 'Action Taken',\n  'follow_up_required': 'Follow Up Required'\n};\n\n// Process responses and map to columns\nObject.keys(responses).forEach(key => {\n  const columnName = fieldMapping[key] || key;\n  const value = responses[key];\n  \n  if (value === null || value === undefined) {\n    rowData[columnName] = '';\n  } else if (typeof value === 'object') {\n    rowData[columnName] = JSON.stringify(value);\n  } else {\n    rowData[columnName] = String(value);\n  }\n});\n\n// Add submission source\nrowData['Source'] = 'Formbricks Form';\nrowData['Status'] = 'New';\n\nreturn [{\n  json: rowData\n}];"
+      },
+      "name": "Process Form Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "sheetId": "1lLZ7c3ec4PfGb32SWWHFeVN-TF2UJeLUsmH99vBb9Do",
+        "range": "Form Submissions!A:Z",
+        "options": {
+          "valueInputMode": "USER_ENTERED"
+        },
+        "dataMode": "autoMapInputData"
+      },
+      "name": "Append to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 2,
+      "position": [650, 300],
+      "credentials": {
+        "googleSheetsApi": {
+          "id": "1",
+          "name": "IoT Stack Sheets"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "message",
+              "value": "=Form submission {{$node[\"Process Form Data\"].json[\"submissionId\"]}} successfully recorded"
+            },
+            {
+              "name": "status",
+              "value": "success"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Success Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [850, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Error Handler\nconst error = $input.all()[0].error;\nconst errorData = {\n  timestamp: new Date().toISOString(),\n  errorMessage: error?.message || 'Unknown error',\n  errorType: error?.name || 'UnknownError',\n  node: error?.node || 'Unknown',\n  formData: JSON.stringify($input.all()[0].json || {}),\n  status: 'failed'\n};\n\n// Log error for debugging\nconsole.error('Form processing error:', errorData);\n\nreturn [{\n  json: errorData\n}];"
+      },
+      "name": "Error Handler",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [650, 450]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "sheetId": "1lLZ7c3ec4PfGb32SWWHFeVN-TF2UJeLUsmH99vBb9Do",
+        "range": "Form Errors!A:F",
+        "options": {
+          "valueInputMode": "USER_ENTERED"
+        },
+        "dataMode": "autoMapInputData"
+      },
+      "name": "Log Errors to Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 2,
+      "position": [850, 450],
+      "credentials": {
+        "googleSheetsApi": {
+          "id": "1",
+          "name": "IoT Stack Sheets"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Formbricks Webhook": {
+      "main": [
+        [
+          {
+            "node": "Process Form Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Form Data": {
+      "main": [
+        [
+          {
+            "node": "Append to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Handler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append to Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Handler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Handler": {
+      "main": [
+        [
+          {
+            "node": "Log Errors to Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "none",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  }
+}

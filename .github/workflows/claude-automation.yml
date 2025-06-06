@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 name: Claude Automation Pipeline
 'on':
   push:
@@ -45,3 +46,338 @@ jobs:
     - name: Update Status
       if: always()
       run: python scripts/update_github_actions_status.py
+=======
+name: Claude Code Automation for Industrial IoT (DISABLED - Use Claude Max version)
+
+# DISABLED - This workflow uses Claude API
+# Use claude-max-automation.yml instead
+on:
+  workflow_dispatch:
+    inputs:
+      task_type:
+        description: 'Type of automation task'
+        required: true
+        default: 'health-check'
+        type: choice
+        options:
+        - health-check
+        - deploy-staging
+        - run-tests
+        - update-docs
+        - backup-configs
+
+env:
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.9'
+
+jobs:
+  claude-automation:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 🔍 Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+    
+    - name: 🔧 Install Claude Code CLI
+      run: |
+        npm install -g @anthropic-ai/claude-code
+        echo "Claude Code CLI installed"
+    
+    - name: 📋 Install Python Dependencies
+      run: |
+        pip install gspread oauth2client python-dotenv requests
+        echo "Python dependencies installed"
+    
+    - name: 🔐 Setup Google Sheets Credentials
+      env:
+        GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
+        GOOGLE_SHEETS_ID: ${{ secrets.GOOGLE_SHEETS_ID }}
+      run: |
+        mkdir -p credentials
+        echo "$GOOGLE_SHEETS_CREDENTIALS" > credentials/github-actions-credentials.json
+        echo "Google Sheets credentials configured"
+    
+    - name: 🤖 Run Claude Automation
+      env:
+        ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+        TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+        DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Create Claude automation script
+        cat > claude_github_automation.py << 'EOF'
+        #!/usr/bin/env python3
+        """
+        Claude GitHub Actions Automation for Industrial IoT Stack
+        """
+        
+        import os
+        import sys
+        import json
+        import subprocess
+        from datetime import datetime
+        
+        def run_claude_task(task_type):
+            """Run specific Claude automation task"""
+            
+            # Define Claude prompts for different automation tasks
+            claude_prompts = {
+                'health-check': """
+                    Analyze the Industrial IoT stack health by:
+                    1. Checking all GitHub workflows status
+                    2. Validating configuration files
+                    3. Testing Google Sheets connectivity
+                    4. Generating health report
+                    5. Update Claude Tasks with any issues found
+                """,
+                
+                'deploy-staging': """
+                    Deploy the Industrial IoT stack to staging environment:
+                    1. Validate all configuration files
+                    2. Run pre-deployment tests
+                    3. Deploy Docker containers
+                    4. Test MQTT connectivity
+                    5. Validate WhatsApp integration
+                    6. Update deployment status in Google Sheets
+                """,
+                
+                'run-tests': """
+                    Execute comprehensive test suite:
+                    1. Test Node-RED flows
+                    2. Validate MQTT message processing
+                    3. Test Discord bot functionality
+                    4. Check WhatsApp integration
+                    5. Validate Steel Bonnet MQTT topics
+                    6. Generate test report
+                """,
+                
+                'update-docs': """
+                    Update project documentation:
+                    1. Scan for new files and changes
+                    2. Update README files
+                    3. Generate API documentation
+                    4. Update integration guides
+                    5. Commit documentation updates
+                """,
+                
+                'backup-configs': """
+                    Backup critical configurations:
+                    1. Export Node-RED flows
+                    2. Backup Docker configurations
+                    3. Save MQTT broker settings
+                    4. Archive Ignition project files
+                    5. Update backup status in Google Sheets
+                """
+            }
+            
+            prompt = claude_prompts.get(task_type, claude_prompts['health-check'])
+            
+            # Use Claude Code CLI to execute the task
+            cmd = [
+                'claude',
+                '--prompt', prompt,
+                '--context', 'github-actions',
+                '--project', '/github/workspace'
+            ]
+            
+            try:
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+                return {
+                    'success': result.returncode == 0,
+                    'output': result.stdout,
+                    'error': result.stderr
+                }
+            except subprocess.TimeoutExpired:
+                return {
+                    'success': False,
+                    'output': '',
+                    'error': 'Claude automation timed out after 10 minutes'
+                }
+            except Exception as e:
+                return {
+                    'success': False,
+                    'output': '',
+                    'error': str(e)
+                }
+        
+        def update_github_status(task_type, result):
+            """Update GitHub with automation results"""
+            
+            # Create status file
+            status = {
+                'timestamp': datetime.now().isoformat(),
+                'task_type': task_type,
+                'success': result['success'],
+                'github_run_id': os.environ.get('GITHUB_RUN_ID'),
+                'github_sha': os.environ.get('GITHUB_SHA'),
+                'output_summary': result['output'][:500] if result['output'] else 'No output',
+                'error_summary': result['error'][:500] if result['error'] else 'No errors'
+            }
+            
+            # Save status to file
+            with open('claude_automation_status.json', 'w') as f:
+                json.dump(status, f, indent=2)
+            
+            print(f"Claude automation completed: {task_type}")
+            print(f"Success: {result['success']}")
+            if result['output']:
+                print(f"Output: {result['output'][:200]}...")
+            if result['error']:
+                print(f"Error: {result['error'][:200]}...")
+        
+        def main():
+            # Get task type from environment or default
+            task_type = os.environ.get('TASK_TYPE', 'health-check')
+            
+            print(f"🤖 Starting Claude automation: {task_type}")
+            
+            # Run Claude task
+            result = run_claude_task(task_type)
+            
+            # Update status
+            update_github_status(task_type, result)
+            
+            # Exit with appropriate code
+            sys.exit(0 if result['success'] else 1)
+        
+        if __name__ == "__main__":
+            main()
+        EOF
+        
+        # Set task type from workflow input or default
+        export TASK_TYPE="${{ github.event.inputs.task_type || 'health-check' }}"
+        
+        # Run Claude automation
+        python claude_github_automation.py
+    
+    - name: 📊 Upload Automation Results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: claude-automation-results
+        path: |
+          claude_automation_status.json
+          *.log
+        retention-days: 30
+    
+    - name: 💬 Update Google Sheets with Results
+      if: always()
+      env:
+        GOOGLE_SHEETS_ID: ${{ secrets.GOOGLE_SHEETS_ID }}
+      run: |
+        python - << 'EOF'
+        import gspread
+        import json
+        import os
+        from oauth2client.service_account import ServiceAccountCredentials
+        from datetime import datetime
+        
+        try:
+            # Load automation results
+            with open('claude_automation_status.json', 'r') as f:
+                status = json.load(f)
+            
+            # Connect to Google Sheets
+            scope = ['https://spreadsheets.google.com/feeds',
+                     'https://www.googleapis.com/auth/drive']
+            creds = ServiceAccountCredentials.from_json_keyfile_name(
+                'credentials/github-actions-credentials.json', scope
+            )
+            client = gspread.authorize(creds)
+            sheet = client.open_by_key(os.environ['GOOGLE_SHEETS_ID'])
+            
+            # Update Agent Activities tab
+            agent_sheet = sheet.worksheet('Agent Activities')
+            agent_sheet.append_row([
+                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "GitHub Actions Claude",
+                f"Automated {status['task_type']}",
+                "Complete" if status['success'] else "Failed",
+                "10 min",
+                status['output_summary'],
+                "Automated via GitHub Actions"
+            ])
+            
+            print("✅ Updated Google Sheets with automation results")
+            
+        except Exception as e:
+            print(f"⚠️ Could not update Google Sheets: {e}")
+        EOF
+    
+    - name: 🚨 Create Issue on Failure
+      if: failure()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const title = `🤖 Claude Automation Failed: ${{ github.event.inputs.task_type || 'health-check' }}`;
+          const body = `
+          ## Claude Automation Failure Report
+          
+          **Task Type**: ${{ github.event.inputs.task_type || 'health-check' }}
+          **Workflow Run**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          **Commit**: ${{ github.sha }}
+          **Branch**: ${{ github.ref_name }}
+          **Timestamp**: ${new Date().toISOString()}
+          
+          ## Action Required
+          - [ ] Check workflow logs
+          - [ ] Verify Claude Code CLI setup
+          - [ ] Check environment variables
+          - [ ] Validate Google Sheets integration
+          
+          ## Auto-generated by GitHub Actions
+          This issue was automatically created when Claude automation failed.
+          `;
+          
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: title,
+            body: body,
+            labels: ['automation', 'claude', 'bug']
+          });
+
+  notify-discord:
+    runs-on: ubuntu-latest
+    needs: claude-automation
+    if: always()
+    
+    steps:
+    - name: 📢 Notify Discord
+      env:
+        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      run: |
+        if [ -n "$DISCORD_WEBHOOK_URL" ]; then
+          STATUS="${{ needs.claude-automation.result }}"
+          COLOR=$([ "$STATUS" = "success" ] && echo "3066993" || echo "15158332")
+          
+          curl -X POST "$DISCORD_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"embeds\": [{
+                \"title\": \"🤖 Claude Automation Complete\",
+                \"description\": \"Task: ${{ github.event.inputs.task_type || 'health-check' }}\",
+                \"color\": $COLOR,
+                \"fields\": [
+                  {\"name\": \"Status\", \"value\": \"$STATUS\", \"inline\": true},
+                  {\"name\": \"Branch\", \"value\": \"${{ github.ref_name }}\", \"inline\": true},
+                  {\"name\": \"Commit\", \"value\": \"${{ github.sha }}\", \"inline\": true}
+                ],
+                \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"
+              }]
+            }"
+        fi
+>>>>>>> 7858b458385cf576eab884e5c3fd1b8815eb6ddb

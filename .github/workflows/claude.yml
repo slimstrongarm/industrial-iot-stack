@@ -14,12 +14,17 @@ permissions:
 
 jobs:
   claude:
+<<<<<<< HEAD
     if: contains(github.event.comment.body, '@claude')
+=======
+    if: contains(github.event.comment.body, '@claude') || contains(github.event.issue.body, '@claude') || contains(github.event.review.body, '@claude')
+>>>>>>> 7858b458385cf576eab884e5c3fd1b8815eb6ddb
     runs-on: ubuntu-latest
     steps:
       - uses: slimstrongarm/claude-code-action@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+<<<<<<< HEAD
           # Option 1: Use Claude Max session key (preferred)
           session-key: ${{ secrets.CLAUDE_MAX_SESSION_KEY }}
           # Option 2: Use Anthropic API key (fallback)
@@ -35,3 +40,8 @@ jobs:
             Key components: EMQX MQTT, n8n workflows, Discord integration, 
             Google Sheets API, Node-RED, Ignition Edge.
             Provide specific, actionable advice for industrial automation.
+=======
+          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # OR for Claude Max OAuth (uncomment and comment above line):
+          # session-key: ${{ secrets.CLAUDE_MAX_SESSION_KEY }}
+>>>>>>> 7858b458385cf576eab884e5c3fd1b8815eb6ddb
