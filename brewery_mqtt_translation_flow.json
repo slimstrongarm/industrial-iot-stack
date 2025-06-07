@@ -1,0 +1,142 @@
+{
+  "id": "brewery-mqtt-translation",
+  "label": "Brewery MQTT to UNS Translation",
+  "info": "Translates Zymnist brewery MQTT topics to standardized UNS structure for Ignition Edge",
+  "nodes": [
+    {
+      "id": "mqtt-input-brewery",
+      "type": "mqtt in",
+      "z": "brewery-flow",
+      "name": "Brewery MQTT Input",
+      "topic": "brewery/+/+/+/+",
+      "qos": "1",
+      "datatype": "auto",
+      "broker": "brewery-broker",
+      "x": 160,
+      "y": 120,
+      "wires": [["topic-parser"]]
+    },
+    {
+      "id": "topic-parser",
+      "type": "function",
+      "z": "brewery-flow", 
+      "name": "Parse Brewery Topics",
+      "func": "// Parse brewery MQTT topic structure\n// Expected: brewery/area/equipment_type/equipment_id/property\n\nconst topicParts = msg.topic.split('/');\nconst payload = typeof msg.payload === 'string' ? JSON.parse(msg.payload) : msg.payload;\n\n// Extract topic components\nconst area = topicParts[1] || 'unknown';\nconst equipmentType = topicParts[2] || 'unknown';\nconst equipmentId = topicParts[3] || 'unknown';\nconst property = topicParts[4] || 'data';\n\n// Create standardized data structure\nmsg.brewery = {\n    originalTopic: msg.topic,\n    area: area,\n    equipmentType: equipmentType,\n    equipmentId: equipmentId,\n    property: property,\n    timestamp: new Date().toISOString(),\n    data: payload\n};\n\n// Equipment type mapping\nconst equipmentMap = {\n    'air_compressor': 'compressed_air',\n    'fermentation_tank': 'fermentation',\n    'temperature_sensor': 'temperature',\n    'pressure_sensor': 'pressure',\n    'flow_meter': 'flow',\n    'pump': 'pumps',\n    'chiller': 'cooling',\n    'boiler': 'heating'\n};\n\nmsg.brewery.mappedType = equipmentMap[equipmentType] || equipmentType;\n\nreturn msg;",
+      "outputs": 1,
+      "x": 380,
+      "y": 120,
+      "wires": [["payload-normalizer"]]
+    },
+    {
+      "id": "payload-normalizer",
+      "type": "function",
+      "z": "brewery-flow",
+      "name": "Normalize Payload",
+      "func": "// Normalize different payload formats to standard structure\n\nconst breweryData = msg.brewery;\nconst rawData = breweryData.data;\n\n// Handle different payload formats\nlet normalizedData = {};\n\nif (typeof rawData === 'object' && rawData !== null) {\n    // Already structured data\n    normalizedData = rawData;\n} else if (typeof rawData === 'number') {\n    // Simple numeric value\n    normalizedData = {\n        value: rawData,\n        unit: 'unknown',\n        status: 'ok'\n    };\n} else if (typeof rawData === 'string') {\n    // Try to parse or treat as status\n    try {\n        normalizedData = JSON.parse(rawData);\n    } catch (e) {\n        normalizedData = {\n            status: rawData,\n            message: rawData\n        };\n    }\n}\n\n// Add standard fields if missing\nnormalizedData.equipment_id = normalizedData.equipment_id || breweryData.equipmentId;\nnormalizedData.equipment_type = normalizedData.equipment_type || breweryData.equipmentType;\nnormalizedData.location = normalizedData.location || breweryData.area;\nnormalizedData.timestamp = normalizedData.timestamp || breweryData.timestamp;\n\n// Status mapping\nif (normalizedData.status) {\n    const statusMap = {\n        'WARN': 'warning',\n        'WARNING': 'warning',\n        'OK': 'normal',\n        'NORMAL': 'normal',\n        'ERROR': 'alarm',\n        'ALARM': 'alarm',\n        'CRITICAL': 'critical'\n    };\n    normalizedData.status = statusMap[normalizedData.status.toUpperCase()] || normalizedData.status;\n}\n\nmsg.normalized = normalizedData;\nreturn msg;",
+      "outputs": 1,
+      "x": 600,
+      "y": 120,
+      "wires": [["uns-mapper"]]
+    },
+    {
+      "id": "uns-mapper",
+      "type": "function",
+      "z": "brewery-flow",
+      "name": "Map to UNS Structure",
+      "func": "// Map brewery data to UNS (Unified Namespace) structure\n// Target: enterprise/site/area/line/cell/equipment/property\n\nconst breweryData = msg.brewery;\nconst normalizedData = msg.normalized;\n\n// UNS structure mapping\nconst enterprise = 'salinas';\nconst site = 'brewery';\n\n// Area mapping\nconst areaMap = {\n    'utilities': 'utilities',\n    'production': 'production', \n    'fermentation': 'production/fermentation',\n    'packaging': 'production/packaging',\n    'cleaning': 'utilities/cleaning',\n    'cooling': 'utilities/cooling'\n};\n\nconst area = areaMap[breweryData.area] || 'general';\n\n// Equipment ID normalization (AC-001 -> compressor_01)\nconst equipmentId = breweryData.equipmentId.toLowerCase().replace(/[^a-z0-9]/g, '_');\n\n// Build UNS topic\nconst unsBaseTopic = `${enterprise}/${site}/${area}/${breweryData.mappedType}/${equipmentId}`;\n\n// Property-specific topics\nconst propertyTopics = {\n    'pressure': `${unsBaseTopic}/pressure`,\n    'temperature': `${unsBaseTopic}/temperature`,\n    'status': `${unsBaseTopic}/status`,\n    'telemetry': `${unsBaseTopic}/telemetry`,\n    'data': `${unsBaseTopic}/data`\n};\n\nconst unsTopic = propertyTopics[breweryData.property] || `${unsBaseTopic}/${breweryData.property}`;\n\n// Create UNS payload\nconst unsPayload = {\n    value: normalizedData.value || normalizedData,\n    quality: 'good',\n    timestamp: normalizedData.timestamp,\n    source: {\n        system: 'brewery_raspberry_pi',\n        equipment: normalizedData.equipment_id,\n        original_topic: breweryData.originalTopic\n    },\n    metadata: {\n        equipment_type: normalizedData.equipment_type,\n        location: normalizedData.location,\n        status: normalizedData.status || 'unknown'\n    }\n};\n\n// Add alert information if present\nif (normalizedData.status && normalizedData.status !== 'normal') {\n    unsPayload.alert = {\n        level: normalizedData.status,\n        message: normalizedData.message || `${breweryData.property} ${normalizedData.status}`,\n        threshold: normalizedData.threshold\n    };\n}\n\nmsg.topic = unsTopic;\nmsg.payload = unsPayload;\nmsg.uns = {\n    topic: unsTopic,\n    payload: unsPayload\n};\n\nreturn msg;",
+      "outputs": 1,
+      "x": 820,
+      "y": 120,
+      "wires": [["mqtt-output-uns", "ignition-opc-writer", "debug-output"]]
+    },
+    {
+      "id": "mqtt-output-uns",
+      "type": "mqtt out",
+      "z": "brewery-flow",
+      "name": "UNS MQTT Output",
+      "topic": "",
+      "qos": "1",
+      "retain": "false",
+      "broker": "enterprise-broker",
+      "x": 1080,
+      "y": 80,
+      "wires": []
+    },
+    {
+      "id": "ignition-opc-writer",
+      "type": "function",
+      "z": "brewery-flow",
+      "name": "Ignition OPC Tag Writer", 
+      "func": "// Create OPC UA tags for Ignition Edge\n\nconst unsData = msg.uns;\nconst topicParts = unsData.topic.split('/');\n\n// Create OPC tag path\n// salinas/brewery/utilities/compressed_air/compressor_01/pressure\n// -> [Brewery]Utilities/CompressedAir/Compressor01/Pressure\n\nconst tagPath = topicParts.slice(2).map(part => {\n    // Convert snake_case to PascalCase\n    return part.split('_').map(word => \n        word.charAt(0).toUpperCase() + word.slice(1)\n    ).join('');\n}).join('/');\n\nconst opcTag = {\n    tagPath: `[Brewery]${tagPath}`,\n    value: unsData.payload.value,\n    quality: unsData.payload.quality,\n    timestamp: unsData.payload.timestamp,\n    dataType: typeof unsData.payload.value === 'number' ? 'Float' : 'String'\n};\n\n// Add alarm tags if alert present\nif (unsData.payload.alert) {\n    msg.alarm = {\n        tagPath: `[Brewery]${tagPath}_Alert`,\n        value: unsData.payload.alert.level,\n        message: unsData.payload.alert.message,\n        timestamp: unsData.payload.timestamp\n    };\n}\n\nmsg.opc = opcTag;\nreturn msg;",
+      "outputs": 1,
+      "x": 1100,
+      "y": 140,
+      "wires": [["opc-output"]]
+    },
+    {
+      "id": "debug-output",
+      "type": "debug",
+      "z": "brewery-flow",
+      "name": "Translation Debug",
+      "active": true,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "true",
+      "targetType": "full",
+      "x": 1090,
+      "y": 200,
+      "wires": []
+    },
+    {
+      "id": "opc-output",
+      "type": "debug",
+      "z": "brewery-flow", 
+      "name": "OPC Tags",
+      "active": true,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "opc",
+      "targetType": "msg",
+      "x": 1320,
+      "y": 140,
+      "wires": []
+    }
+  ],
+  "configs": [
+    {
+      "id": "brewery-broker",
+      "type": "mqtt-broker",
+      "name": "Brewery MQTT Broker",
+      "broker": "192.168.1.100",
+      "port": "1883",
+      "clientid": "nodered-brewery-client",
+      "usetls": false,
+      "compatmode": false,
+      "keepalive": "60",
+      "cleansession": true,
+      "birthTopic": "",
+      "birthQos": "0",
+      "birthPayload": "",
+      "closeTopic": "",
+      "closeQos": "0",
+      "closePayload": "",
+      "willTopic": "",
+      "willQos": "0",
+      "willPayload": ""
+    },
+    {
+      "id": "enterprise-broker",
+      "type": "mqtt-broker", 
+      "name": "Enterprise MQTT Broker",
+      "broker": "100.94.84.126",
+      "port": "1883",
+      "clientid": "nodered-enterprise-client",
+      "usetls": false,
+      "compatmode": false,
+      "keepalive": "60",
+      "cleansession": true
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+/**
+ * Remove Server Claude tasks from Human Tasks tab
+ * Run this after creating the Claude Tasks tab
+ */
+function cleanupHumanTasks() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const humanTasksSheet = ss.getSheetByName('Human Tasks');
+  
+  const data = humanTasksSheet.getDataRange().getValues();
+  
+  // Find rows with "Server Claude" and delete them from bottom to top
+  for (let i = data.length - 1; i >= 1; i--) {
+    if (data[i][4] === 'Server Claude') { // Column E (Assigned To)
+      humanTasksSheet.deleteRow(i + 1);
+    }
+  }
+  
+  SpreadsheetApp.getActiveSpreadsheet().toast('Server Claude tasks removed from Human Tasks tab!', 'Success', 3);
+}
