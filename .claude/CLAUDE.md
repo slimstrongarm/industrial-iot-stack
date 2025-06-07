@@ -16,6 +16,16 @@ This project creates a unified documentation system for an Industrial IoT stack 
 - **Check existing setup first**: credentials/iot-stack-credentials.json and scripts/*google*sheets*.py
 - **Spreadsheet ID**: 1lLZ7c3ec4PfGb32SWWHFeVN-TF2UJeLUsmH99vBb9Do
 
+## 🤖 GAME CHANGER: Discord Automation Integration
+**Revolutionary workflow automation now ACTIVE** - Tasks can be created and auto-processed via Discord:
+- **Discord Bot**: @Mac Claude Bot add task [description] → Creates task in Google Sheets
+- **Auto Assignment**: Tasks assigned to "Mac Claude" or "Server Claude" 
+- **Auto Processing**: Claude workers automatically pick up and complete tasks
+- **Mobile Access**: Full task management from iPhone Discord app
+- **Real-time Updates**: Task status changes automatically: Pending → In Progress → Complete
+- **Channels**: #mac-claude, #server-claude for instance-specific coordination
+- **Proven**: CT-049 successfully automated end-to-end (Discord → Sheets → Mac Claude → Complete)
+
 ## Structure
 
 ```
@@ -73,6 +83,13 @@ industrial-iot-stack/
 - **System Admins**: Server Setup → Docker → Monitoring
 
 ## 🔧 Essential System Endpoints
+### Discord Automation (PRIMARY WORKFLOW)
+- **Mac Claude Channel**: #mac-claude in "slims agents" Discord server
+- **Server Claude Channel**: #server-claude (to be created by Server Claude)
+- **Bot Commands**: @Mac Claude Bot add task [description]
+- **Task Workers**: scripts/mac_claude_task_worker.py, scripts/server_claude_task_worker.py
+- **Real-time Mobile**: Discord iPhone app for instant task management
+
 ### Node-RED
 - **UI**: http://localhost:1880
 - **Dashboard**: http://localhost:1880/ui
@@ -110,11 +127,13 @@ Please clean up any files that you've created for testing or debugging purposes 
 
 ## 🔍 ALWAYS CHECK FIRST
 Before claiming "no access" to any system:
-1. **Google Sheets**: Check credentials/iot-stack-credentials.json and scripts/*google*sheets*.py
-2. **APIs**: Check credentials/ folder for service account files
-3. **Documentation patterns**: Check INDEX.md for existing organization
-4. **Scripts**: Search scripts/ directory for existing automation
-5. **Endpoints**: Use the system endpoints listed above
+1. **Discord Automation**: Check if task can be created via @Mac Claude Bot add task [description]
+2. **Google Sheets**: Check credentials/iot-stack-credentials.json and scripts/*google*sheets*.py
+3. **Task Workers**: Check if mac_claude_task_worker.py or server_claude_task_worker.py can handle the task
+4. **APIs**: Check credentials/ folder for service account files
+5. **Documentation patterns**: Check INDEX.md for existing organization
+6. **Scripts**: Search scripts/ directory for existing automation
+7. **Endpoints**: Use the system endpoints listed above
 
 ## 📊 Google Sheets Claude Tasks - CRITICAL PRIORITY
 - This is the LIVING TO-DO LIST that drives all project work

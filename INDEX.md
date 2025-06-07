@@ -20,11 +20,15 @@
 ## 🔧 Component Documentation
 
 ### Communication Systems
+- **[Discord Claude Bot](discord-bot/README.md)** - 🤖 **GAME CHANGER** Real-time task automation via Discord
+- **[Discord Bot Setup](discord-bot/)** - Complete Discord integration with automated Claude task processing
 - **[WhatsApp Integration](WHATSAPP_API_INTEGRATION_GUIDE.md)** - Complete WhatsApp API guide
-- **[Discord Integration](DISCORD_INTEGRATION_VISION.md)** - Team coordination setup
 - **[Formbricks Integration](FORMBRICKS_HYBRID_INTEGRATION_GUIDE.md)** - Form management system
 
 ### Workflow Automation
+- **[Claude Task Automation](scripts/mac_claude_task_worker.py)** - 🚀 **NEW** Automated Claude task processing
+- **[Discord → Claude Pipeline](discord-bot/)** - Real-time task creation and execution
+- **[Mac Claude Monitor](scripts/mac_claude_task_monitor.py)** - Task monitoring and alerts
 - **[n8n Setup](N8N_API_CAPABILITIES.md)** - Workflow automation
 - **[n8n Troubleshooting](N8N_MQTT_TROUBLESHOOTING_GUIDE.md)** - Common issues
 - **[Node-RED Flows](node-red-flows/)** - Visual flow programming
@@ -132,12 +136,14 @@
 ### **Developers**
 1. Check [Local Development](docs/setup/LOCAL_DEVELOPMENT.md)
 2. Review [Testing Guide](docs/testing/TESTING_GUIDE.md)
-3. Explore [Scripts Organization](scripts/)
+3. **[Set up Discord Bot](discord-bot/README.md)** - **Essential for workflow automation**
+4. Explore [Scripts Organization](scripts/)
 
 ### **Operators**
 1. Review [Steel Bonnet Setup](Steel_Bonnet/README.md)
-2. Check [WhatsApp Integration](WHATSAPP_API_INTEGRATION_GUIDE.md)
-3. Monitor via [Discord Integration](DISCORD_INTEGRATION_VISION.md)
+2. **[Discord Task Management](discord-bot/)** - 📱 **Create and manage tasks from iPhone**
+3. Check [WhatsApp Integration](WHATSAPP_API_INTEGRATION_GUIDE.md)
+4. Monitor via [Claude Task Worker](scripts/mac_claude_task_worker.py)
 
 ### **System Administrators**
 1. Follow [Server Setup](SERVER_SETUP_GUIDE.md)
@@ -148,11 +154,14 @@
 
 ## 📧 Support & Coordination
 
-- **Discord Channel**: Team coordination and real-time alerts
+- **🤖 Discord Bot**: Real-time task creation and automated Claude processing
+- **📱 Mobile Discord**: Create and manage tasks from iPhone (#mac-claude, #server-claude)
+- **🔄 Auto Task Processing**: Mac Claude and Server Claude workers handle tasks automatically
 - **WhatsApp Integration**: Equipment monitoring and maintenance alerts
-- **Google Sheets**: Progress tracking and analytics
+- **Google Sheets**: Progress tracking, analytics, and Claude Tasks management
 - **GitHub Issues**: Bug reports and feature requests
 
-**Last Updated**: 2025-06-04 23:30:00 UTC  
+**Last Updated**: 2025-06-07 10:25:00 UTC (Discord Integration Added)  
 **Repository Organization**: 5/5 ⭐  
+**Workflow Revolution**: 🚀 **DISCORD AUTOMATION ACTIVE**  
 **Ready for Production**: ✅
