@@ -123,6 +123,7 @@ Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.
 ALWAYS prefer editing an existing file to creating a new one.
 NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
+TEST scripts are meant to test functionaility. removing functions or features is never an option unless expicitely told by Human. Testing should look for items that are not working correctly and work towards those items functioning NOT removing them just to complete the test.
 Please clean up any files that you've created for testing or debugging purposes after they're no longer needed.
 
 ## 🔍 ALWAYS CHECK FIRST
