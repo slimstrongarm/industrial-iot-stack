@@ -1,0 +1,32 @@
+[Unit]
+Description=Claude Health Monitor
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=claude
+Group=claude
+WorkingDirectory=/opt/claude/scripts/monitoring
+ExecStart=/usr/bin/python3 discord_health_monitor.py
+Restart=always
+RestartSec=30
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=claude-health-monitor
+
+# Environment
+Environment=PYTHONUNBUFFERED=1
+
+# Security settings
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/claude/logs
+
+# Allow sudo for service restarts (only for systemd mode)
+SupplementaryGroups=sudo
+
+[Install]
+WantedBy=multi-user.target

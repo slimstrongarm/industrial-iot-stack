@@ -1,9 +1,35 @@
+version: '3.8'
+
 services:
   discord-bot:
     build: .
     container_name: discord-claude-bot
-    environment:
-      - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
+    environment:
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - GOOGLE_SHEETS_CREDENTIALS_PATH=/app/credentials/service-account.json
+    volumes:
+      - ./logs:/app/logs
+      - ../credentials:/app/credentials:ro
+    networks:
+      - claude-network
+
+  mac-claude-worker:
+    build:
+      context: ../scripts
+      dockerfile: Dockerfile.worker
+    container_name: mac-claude-worker
+    restart: unless-stopped
+    environment:
+      - GOOGLE_SHEETS_CREDENTIALS_PATH=/app/credentials/service-account.json
+    volumes:
+      - ./logs:/app/logs
+      - ../credentials:/app/credentials:ro
+    networks:
+      - claude-network
+    depends_on:
+      - discord-bot
+
+networks:
+  claude-network:
+    driver: bridge

@@ -1,0 +1,31 @@
+[Unit]
+Description=Claude Task Worker
+After=network.target claude-discord.service
+Wants=network.target
+Requires=claude-discord.service
+
+[Service]
+Type=simple
+User=claude
+Group=claude
+WorkingDirectory=/opt/claude/scripts
+ExecStart=/usr/bin/python3 mac_claude_task_worker.py
+Restart=always
+RestartSec=15
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=claude-worker
+
+# Environment
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=/opt/claude/scripts/.env
+
+# Security settings
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/claude/scripts/logs
+
+[Install]
+WantedBy=multi-user.target

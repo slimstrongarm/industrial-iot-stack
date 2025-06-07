@@ -1,0 +1,30 @@
+[Unit]
+Description=Claude Discord Bot
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=claude
+Group=claude
+WorkingDirectory=/opt/claude/discord-bot
+ExecStart=/usr/bin/python3 industrial_iot_claude_bot.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=claude-discord
+
+# Environment
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=/opt/claude/discord-bot/.env
+
+# Security settings
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/claude/discord-bot/logs
+
+[Install]
+WantedBy=multi-user.target

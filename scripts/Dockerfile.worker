@@ -11,8 +11,9 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY . .
+# Copy worker scripts
+COPY mac_claude_task_worker.py .
+COPY mac_claude_task_monitor.py .
 
 # Create non-root user for security
 RUN useradd -m -u 1000 claude && chown -R claude:claude /app
@@ -20,7 +21,7 @@ USER claude
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import discord; print('Bot is healthy')" || exit 1
+    CMD python -c "import gspread; print('Worker is healthy')" || exit 1
 
-# Start the bot
-CMD ["python", "industrial_iot_claude_bot.py"]
+# Start the worker
+CMD ["python", "mac_claude_task_worker.py"]

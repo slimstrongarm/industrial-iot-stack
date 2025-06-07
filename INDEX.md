@@ -100,8 +100,11 @@
 - **[Troubleshooting](docs/troubleshooting/COMMON_ISSUES.md)** - Problem resolution
 
 ### Production Deployment
-- **[Server Deployment](SERVER_CLAUDE_DEPLOYMENT_PACKAGE.md)** - Production setup
+- **[Server Deployment](SERVER_CLAUDE_DEPLOYMENT_PACKAGE.md)** - 🐳 **NEW** Discord bot persistent deployment
 - **[Docker Configuration](docker-configs/)** - Container management
+- **[Discord Bot Containers](discord-bot/docker-compose.yml)** - 🔄 Always-running Discord automation
+- **[Health Monitoring](scripts/monitoring/)** - 🏥 Auto-restart and failure recovery
+- **[Systemd Services](discord-bot/claude-discord.service)** - Native Linux service deployment
 - **[Cloud Setup](docs/deployment/CLOUD_DEPLOYMENT.md)** - Scalable hosting
 
 ## 🔄 Workflow Automation
@@ -147,8 +150,10 @@
 
 ### **System Administrators**
 1. Follow [Server Setup](SERVER_SETUP_GUIDE.md)
-2. Review [Docker Configuration](docker-configs/)
-3. Check [Monitoring Tools](scripts/monitoring/)
+2. **[Deploy Discord Bot Containers](SERVER_CLAUDE_DEPLOYMENT_PACKAGE.md)** - 🐳 **Critical for 24/7 automation**
+3. Review [Docker Configuration](docker-configs/)
+4. Set up [Health Monitoring](scripts/monitoring/discord_health_monitor.py)
+5. Configure [Auto-restart Services](discord-bot/claude-discord.service)
 
 ---
 

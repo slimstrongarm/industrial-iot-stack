@@ -1,27 +1,34 @@
-# 🚀 Server Claude n8n Deployment Package
+# 🚀 Server Claude Discord Bot Deployment Package
 
-## ✅ Ready for Immediate Deployment
+## ✅ Ready for Always-Running Deployment
 
 ### What's Been Prepared
-1. **✅ CT-005 Completed** - MQTT architecture documentation updated with your findings
-2. **✅ Production n8n Setup** - PostgreSQL-backed, production-ready configuration
-3. **✅ MQTT → WhatsApp Workflow** - Industrial alert system ready to import
-4. **✅ One-Command Deployment** - Automated setup script ready to run
+1. **✅ Docker Containers** - Discord bot and task worker containerized
+2. **✅ Systemd Services** - Native Linux service configurations
+3. **✅ Auto-restart Logic** - Persistent operation with failure recovery
+4. **✅ Security Hardening** - Non-root execution and system protection
 
 ---
 
-## 🎯 **SINGLE COMMAND DEPLOYMENT**
+## 🎯 **DEPLOYMENT OPTIONS**
 
+### Option 1: Docker Deployment (Recommended)
 ```bash
-./scripts/deploy_n8n_stack.sh
+cd /opt/claude/discord-bot
+docker-compose up -d
 ```
 
-This will:
-- ✅ Deploy n8n with PostgreSQL database
-- ✅ Set up proper networking with existing EMQX
-- ✅ Create environment configuration
-- ✅ Prepare workflows for import
-- ✅ Provide all access credentials
+### Option 2: Systemd Services (Native)
+```bash
+sudo systemctl enable claude-discord claude-worker
+sudo systemctl start claude-discord claude-worker
+```
+
+Both options provide:
+- ✅ 24/7 persistent operation
+- ✅ Automatic restart on failure
+- ✅ Proper logging and monitoring
+- ✅ Security isolation
 
 ---
 
