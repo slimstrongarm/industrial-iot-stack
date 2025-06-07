@@ -26,34 +26,70 @@ This project creates a unified documentation system for an Industrial IoT stack 
 - **Channels**: #mac-claude, #server-claude for instance-specific coordination
 - **Proven**: CT-049 successfully automated end-to-end (Discord → Sheets → Mac Claude → Complete)
 
-## Structure
+## Structure (Current Reality - 2025-06-07)
 
 ```
 industrial-iot-stack/
-├── stack-components/          # Individual technology documentation
-│   ├── ignition-edge/
-│   │   ├── README.md         # Ignition Edge overview
-│   │   ├── capabilities.md   # What it can do
-│   │   ├── current-state.md  # Current implementation
-│   │   └── integration.md    # How it connects to other components
-│   ├── node-red/
-│   │   ├── README.md
-│   │   ├── capabilities.md
-│   │   ├── current-state.md
-│   │   └── integration.md
-│   ├── mqtt/
-│   ├── databases/
-│   ├── edge-computing/
-│   └── protocols/
-├── templates/                 # Documentation templates
-├── scripts/                   # Automation scripts
+├── .claude/                   # 📚 Claude documentation hub & instructions
+├── discord-bot/               # 🤖 Discord automation system (GAME CHANGER)
+│   ├── industrial_iot_claude_bot.py  # Main Discord bot
+│   ├── docker-compose.yml     # Production deployment
+│   ├── claude-discord.service # Systemd service for 24/7 operation
+│   └── requirements.txt       # Python dependencies
+├── Steel_Bonnet/              # 🏭 Complete brewery implementation
+│   ├── scripts/               # Industrial automation scripts
+│   ├── node-red-flows/        # Brewery-specific flows
+│   ├── udts/                  # User Defined Types for Ignition
+│   └── views/                 # HMI screens and interfaces
+├── ignition-project-scan-endpoint/  # 🔧 Custom Ignition module
+├── scripts/                   # 🔧 Automation & monitoring infrastructure
+│   ├── monitoring/            # 🏥 Health monitoring & auto-restart
+│   │   ├── unified_industrial_monitor.py    # Complete stack monitoring
+│   │   ├── discord_health_monitor.py        # Discord bot health
+│   │   └── unified_monitoring_system.py     # Google Sheets integration
+│   ├── utilities/             # Helper tools and API clients
+│   ├── mac_claude_task_worker.py      # Automated Claude task processing
+│   └── add_unified_monitoring_tasks.py  # Google Sheets task management
+├── stack-components/          # 📊 Individual technology documentation
+│   ├── ignition-edge/         # Ignition Edge (basic docs)
+│   ├── node-red/              # Node-RED (basic docs)
+│   ├── n8n/                   # ✅ n8n workflow automation (complete docs)
+│   ├── grafana/               # ✅ Grafana dashboards (complete setup)
+│   ├── mqtt/                  # MQTT broker configurations
+│   ├── databases/             # Database integrations
+│   ├── edge-computing/        # Edge device integration
+│   └── protocols/             # Communication protocols
+├── whatsapp-integration/      # 📱 WhatsApp alerts & notifications
+├── claude-code-action-fork/   # 🔄 GitHub Actions Claude integration
+├── credentials/               # 🔐 API keys and service accounts
+├── docker-configs/            # 🐳 Docker Compose configurations
+├── templates/                 # 📋 Documentation templates
+├── UNIFIED_MONITORING_STRATEGY.md    # 🏭 Unified monitoring architecture
+├── SERVER_CLAUDE_DEPLOYMENT_PACKAGE.md  # 🚀 Production deployment guide
 ├── STACK-OVERVIEW.md         # Aggregated view of all components
 └── README.md                 # Project documentation
+```
 
-## Integration with Steel Bonnet
-- Steel Bonnet Repository: Contains actual implementation scripts
-- This Repository: Contains documentation and architecture overview
-- Cross-references between repos for complete picture
+## Major System Components
+
+### 🤖 Discord Automation (PRIMARY WORKFLOW)
+- **Real-time task creation** via Discord commands (`!task description`)
+- **Mobile-first operations** using iPhone Discord app
+- **Automated task processing** with Mac Claude worker
+- **24/7 persistent operation** via Docker containers and systemd services
+- **Proven end-to-end automation**: CT-049 successfully completed via Discord → Sheets → Mac Claude
+
+### 🏭 Steel Bonnet Brewery Implementation
+- **Complete industrial implementation** with real brewery equipment
+- **OPC UA to MQTT translation** for equipment monitoring
+- **Node-RED flows** for brewery-specific automation
+- **Ignition HMI integration** with custom UDTs and views
+
+### 🏥 Unified Monitoring System
+- **Complete stack monitoring**: Docker containers, MQTT brokers, Node-RED flows, Ignition Gateway
+- **Auto-restart capabilities** for failed services
+- **Mobile alerts** via Discord and WhatsApp integration
+- **Google Sheets dashboard** for centralized monitoring
 
 ## How to Use
 1. Each technology maintainer updates their component folder
