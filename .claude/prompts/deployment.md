@@ -4,7 +4,7 @@
 1. Check Google Sheets for pending tasks
 2. Review recent git commits
 3. Validate configuration files
-4. Test integrations (MQTT, WhatsApp, Discord)
+4. Test integrations (MQTT, WhatsApp, OPC Igntition Server, Discord)
 5. Update task status in Google Sheets
 
 ## Common Commands
@@ -20,7 +20,17 @@ python3 scripts/comprehensive_sheets_update.py
 
 # Test WhatsApp flow
 node whatsapp-integration/test-alert.js
+
+# Test GitHub connection flow
+enter correct data here
+
+# Test NodeRed MAX status
+enter correct data here
+
+# Test n8n status
+enter correct data here
 ```
+
 
 ## Pre-Deployment Questions
 - Are all dependencies deployed?
