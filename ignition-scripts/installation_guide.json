@@ -1,0 +1,64 @@
+{
+  "title": "Ignition n8n Integration Scripts Installation Guide",
+  "created": "2025-06-04T06:42:10.082522",
+  "scripts": [
+    {
+      "name": "Equipment Alert Script",
+      "file": "ignition_equipment_alerts.py",
+      "purpose": "Send equipment alerts to n8n MQTT workflow",
+      "installation": [
+        "1. Copy script to Ignition Designer Project Library",
+        "2. Import as module in project scripts",
+        "3. Call functions from tag change scripts",
+        "4. Test with sample equipment alerts"
+      ],
+      "usage_examples": [
+        "sendCriticalAlert('PUMP-001', 'Centrifugal Pump', 'Building A', 95, 85, 'Temperature exceeded')",
+        "checkTemperatureSensor('[default]Equipment/Pump001/Temperature', 'PUMP-001', 'Building A')",
+        "sendSystemHealthStatus()"
+      ]
+    },
+    {
+      "name": "Data Logger Script",
+      "file": "ignition_data_logger.py",
+      "purpose": "Log equipment data to Google Sheets via n8n",
+      "installation": [
+        "1. Add to Project Library scripts",
+        "2. Configure scheduled execution for logHourlyData()",
+        "3. Update equipment_list with your tag paths",
+        "4. Set up n8n webhook endpoint for data logging"
+      ],
+      "schedule": "Run logHourlyData() every hour via Gateway Scheduled Script"
+    },
+    {
+      "name": "Webhook Receiver Script",
+      "file": "ignition_webhook_receiver.py",
+      "purpose": "Receive and execute commands from n8n",
+      "installation": [
+        "1. Add to Gateway Event Scripts",
+        "2. Configure Message Handler to call handleN8nCommand()",
+        "3. Update equipment control tag mappings",
+        "4. Test command execution"
+      ],
+      "message_types": [
+        "start_equipment",
+        "stop_equipment",
+        "set_setpoint",
+        "acknowledge_alarm"
+      ]
+    }
+  ],
+  "n8n_workflow_requirements": [
+    "Webhook endpoints for receiving Ignition data",
+    "HTTP Request nodes for sending commands to Ignition",
+    "MQTT publishing for equipment alerts",
+    "Google Sheets integration for data logging"
+  ],
+  "testing_checklist": [
+    "\u2713 Test equipment alert sending",
+    "\u2713 Verify MQTT message routing",
+    "\u2713 Check Google Sheets data logging",
+    "\u2713 Test command execution from n8n",
+    "\u2713 Verify error handling and logging"
+  ]
+}

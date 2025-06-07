@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  # PostgreSQL database for n8n
+  n8n-postgres:
+    image: postgres:15
+    container_name: n8n-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=n8n
+      - POSTGRES_USER=n8n_user
+      - POSTGRES_PASSWORD=n8n_password
+      - POSTGRES_NON_ROOT_USER=n8n_user
+      - POSTGRES_NON_ROOT_PASSWORD=n8n_password
+    volumes:
+      - n8n-postgres-data:/var/lib/postgresql/data
+    networks:
+      - n8n-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h localhost -U n8n_user -d n8n']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # n8n workflow automation with PostgreSQL backend
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      # Database Configuration
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=n8n-postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=n8n_user
+      - DB_POSTGRESDB_PASSWORD=n8n_password
+      
+      # Basic Auth
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=admin
+      
+      # Server Configuration
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+      
+      # Timezone and Misc
+      - GENERIC_TIMEZONE=America/New_York
+      - N8N_METRICS=true
+      - N8N_LOG_LEVEL=info
+      
+      # Workflow Configuration
+      - WORKFLOWS_DEFAULT_NAME=IoT Workflow
+      - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
+      
+      # External Services Integration
+      # - N8N_AVAILABLE_BINARY_DATA_MODES=default,s3
+      
+    volumes:
+      - n8n-data:/home/node/.n8n
+      - n8n-workflows:/home/node/.n8n/workflows
+    networks:
+      - n8n-network
+      - iiot-network  # Connect to main IoT network for MQTT access
+    depends_on:
+      n8n-postgres:
+        condition: service_healthy
+
+networks:
+  n8n-network:
+    driver: bridge
+  iiot-network:
+    external: true
+    name: industrial-iot-stack_iiot-network
+
+volumes:
+  n8n-postgres-data:
+    driver: local
+  n8n-data:
+    driver: local
+  n8n-workflows:
+    driver: local

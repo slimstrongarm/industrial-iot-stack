@@ -186,10 +186,46 @@ Google Sheets Task → Detection → Analysis → Execution → Real Deliverable
 - **Tribal Knowledge Preserved**: TRIBAL_KNOWLEDGE_SYSTEM.md updated
 - **Recovery Scripts Available**: Backup and restore procedures documented
 
+## 🎯 Claude Task Completions (June 2025)
+
+### CT-008: Integration Test - MQTT→WhatsApp Alert Workflow ✅
+**Status**: COMPLETED - 2025-06-03  
+**Critical Discovery**: Docker network isolation issue resolved
+
+**Problem Solved**: 
+- n8n container on `industrial-iot-stack_iiot-network`
+- EMQX container on `bridge` network
+- **Solution**: Use `host.docker.internal` in n8n MQTT configuration
+
+**Working Configuration**:
+```
+Protocol: mqtt://
+Host: host.docker.internal
+Port: 1883
+Username: (empty)
+Password: (empty)  
+Client ID: n8n-mqtt-client
+```
+
+**Documentation Created**:
+- `N8N_MQTT_NETWORK_FIX.md` - Network isolation solution
+- `MQTT_AUTH_DEBUG.md` - Comprehensive troubleshooting guide
+- `N8N_INTEGRATION_COMPLETE.md` - Full n8n API integration
+
+**Key Learning**: Hours spent on authentication debugging when the real issue was Docker network isolation between containers.
+
+### Network Architecture Discovery
+**Container Network Mapping**:
+- n8n: `industrial-iot-stack_iiot-network`
+- EMQX: `bridge` network
+- Solution: Cross-network communication via `host.docker.internal`
+
+**Future Reference**: Always check Docker network compatibility when containers can't communicate.
+
 ---
 
-**Status**: 🚀 **BREAKTHROUGH COMPLETE** - Full automation infrastructure operational, ready for server deployment
+**Status**: 🚀 **INTEGRATION BREAKTHROUGH** - n8n ↔ EMQX MQTT communication established
 
-**Last Update**: 2025-06-01 11:50 - Automation Infrastructure Complete
+**Last Update**: 2025-06-03 23:30 - Critical Docker network issue resolved, CT-008 completed
 
-**Next Agent**: Use Google Sheets to add server deployment tasks, system will auto-execute with progress tracking
+**Next Agent**: Continue with remaining integration tasks using established network patterns

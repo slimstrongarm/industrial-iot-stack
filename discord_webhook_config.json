@@ -1,0 +1,52 @@
+{
+  "discord": {
+    "alerts_webhook": "https://discordapp.com/api/webhooks/1380061953883373660/lFn5d2hcBxAhaMJSpBNwjQNInczAGYQ-HYky70iSiNymhFXw7egnjUapMdAHZXrRWJhG",
+    "logs_webhook": "https://discordapp.com/api/webhooks/1380061953883373660/lFn5d2hcBxAhaMJSpBNwjQNInczAGYQ-HYky70iSiNymhFXw7egnjUapMdAHZXrRWJhG",
+    "general_webhook": "https://discordapp.com/api/webhooks/1380061953883373660/lFn5d2hcBxAhaMJSpBNwjQNInczAGYQ-HYky70iSiNymhFXw7egnjUapMdAHZXrRWJhG",
+    "critical_webhook": "https://discordapp.com/api/webhooks/1380061953883373660/lFn5d2hcBxAhaMJSpBNwjQNInczAGYQ-HYky70iSiNymhFXw7egnjUapMdAHZXrRWJhG",
+    "configured_date": "2025-06-04T23:19:32.418713",
+    "configured_by": "Server Claude (Auto)",
+    "status": "active",
+    "source": "Google Sheets Discord URL tab"
+  },
+  "channels": {
+    "alerts": {
+      "webhook": "https://discordapp.com/api/webhooks/1380061953883373660/lFn5d2hcBxAhaMJSpBNwjQNInczAGYQ-HYky70iSiNymhFXw7egnjUapMdAHZXrRWJhG",
+      "purpose": "Equipment alerts and warnings",
+      "severity_levels": [
+        "warning",
+        "error",
+        "critical"
+      ]
+    },
+    "logs": {
+      "webhook": "https://discordapp.com/api/webhooks/1380061953883373660/lFn5d2hcBxAhaMJSpBNwjQNInczAGYQ-HYky70iSiNymhFXw7egnjUapMdAHZXrRWJhG",
+      "purpose": "General system logging",
+      "severity_levels": [
+        "info",
+        "debug"
+      ]
+    },
+    "general": {
+      "webhook": "https://discordapp.com/api/webhooks/1380061953883373660/lFn5d2hcBxAhaMJSpBNwjQNInczAGYQ-HYky70iSiNymhFXw7egnjUapMdAHZXrRWJhG",
+      "purpose": "General notifications",
+      "severity_levels": [
+        "info"
+      ]
+    },
+    "critical": {
+      "webhook": "https://discordapp.com/api/webhooks/1380061953883373660/lFn5d2hcBxAhaMJSpBNwjQNInczAGYQ-HYky70iSiNymhFXw7egnjUapMdAHZXrRWJhG",
+      "purpose": "Critical system alerts",
+      "severity_levels": [
+        "critical",
+        "emergency"
+      ]
+    }
+  },
+  "formatting": {
+    "use_embeds": true,
+    "include_timestamp": true,
+    "include_severity_colors": true,
+    "max_message_length": 2000
+  }
+}

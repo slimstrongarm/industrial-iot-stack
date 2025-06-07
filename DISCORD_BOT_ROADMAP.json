@@ -1,0 +1,42 @@
+{
+  "discord_bot_roadmap": {
+    "phase_1_quick_test": {
+      "description": "Test if we can read Discord messages",
+      "time_estimate": "30 minutes",
+      "requirements": [
+        "Discord Bot Token",
+        "Bot permissions in server",
+        "Python discord.py library"
+      ],
+      "outcome": "Verify we can read your messages"
+    },
+    "phase_2_basic_response": {
+      "description": "Get Claude to respond to Discord messages",
+      "time_estimate": "1 hour",
+      "requirements": [
+        "Message parsing",
+        "Claude API integration",
+        "Response formatting"
+      ],
+      "outcome": "Basic Discord \u2194 Claude communication"
+    },
+    "phase_3_interactive": {
+      "description": "Full interactive experience",
+      "time_estimate": "2 hours",
+      "requirements": [
+        "Thread support",
+        "Context memory",
+        "Command parsing",
+        "Error handling"
+      ],
+      "outcome": "Discord becomes Claude interface!"
+    },
+    "mind_blown_features": [
+      "Type '@Claude what's the temperature of reactor 3?' \u2192 Instant reply",
+      "Industrial alerts \u2192 Ask followup questions in Discord",
+      "Full conversation threads with context",
+      "Commands like '/status', '/help', '/deploy'",
+      "Real-time system interaction through Discord"
+    ]
+  }
+}
