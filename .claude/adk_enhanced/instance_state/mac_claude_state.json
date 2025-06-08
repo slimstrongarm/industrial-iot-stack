@@ -1,0 +1,201 @@
+{
+  "instance_id": "mac_claude",
+  "timestamp": "2025-06-08T00:15:56.171572",
+  "session_context": {
+    "test": true,
+    "session_id": "test_session",
+    "data": "This is test context data"
+  },
+  "current_tasks": [
+    {
+      "task_id": "CT-066",
+      "status": "in_progress",
+      "description": "Install ADK Framework",
+      "assigned_to": "mac_claude"
+    }
+  ],
+  "recent_actions": [
+    {
+      "type": "git_commit",
+      "description": "241b9e5 \ud83d\udcda Update .claude/CLAUDE.md structure to reflect current reality",
+      "timestamp": "2025-06-08T00:15:56.190867"
+    },
+    {
+      "type": "git_commit",
+      "description": "a404740 \ud83d\udc33 Add Discord bot persistent deployment infrastructure",
+      "timestamp": "2025-06-08T00:15:56.190886"
+    },
+    {
+      "type": "git_commit",
+      "description": "fa44594 Update CLAUDE.md",
+      "timestamp": "2025-06-08T00:15:56.190887"
+    },
+    {
+      "type": "git_commit",
+      "description": "b9c7151 \ud83d\udcda Update documentation for Discord workflow revolution",
+      "timestamp": "2025-06-08T00:15:56.190888"
+    },
+    {
+      "type": "git_commit",
+      "description": "2d8d049 \ud83e\udd16 Add Discord bot with automated Mac Claude task processing",
+      "timestamp": "2025-06-08T00:15:56.190888"
+    }
+  ],
+  "file_modifications": [
+    {
+      "file": "teel_Bonnet",
+      "status": "M ",
+      "timestamp": "2025-06-08T00:15:56.225103"
+    },
+    {
+      "file": "ignition-project-scan-endpoint",
+      "status": " M",
+      "timestamp": "2025-06-08T00:15:56.225126"
+    },
+    {
+      "file": ".claude/ADK_ONBOARDING_GUIDE.md",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225127"
+    },
+    {
+      "file": ".claude/adk_enhanced/",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225128"
+    },
+    {
+      "file": "ADK_HYBRID_INTEGRATION_PLAN.md",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225128"
+    },
+    {
+      "file": "ADK_ONBOARDING_GUIDE.md",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225129"
+    },
+    {
+      "file": "CT-058_MONITORING_DASHBOARD_DRAFT.md",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225130"
+    },
+    {
+      "file": "CT-066_COMPLETION_SUMMARY.md",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225131"
+    },
+    {
+      "file": "DISCORD_BOT_PRODUCTION_MIGRATION.md",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225132"
+    },
+    {
+      "file": "HYBRID_ADK_ARCHITECTURE.md",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225132"
+    },
+    {
+      "file": "UNIFIED_MONITORING_STRATEGY.md",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225133"
+    },
+    {
+      "file": "scripts/.mac_claude_tasks_state.json",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225134"
+    },
+    {
+      "file": "scripts/actually_fix_duplicates.py",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225135"
+    },
+    {
+      "file": "scripts/add_adk_hybrid_tasks.py",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225135"
+    },
+    {
+      "file": "scripts/add_discord_claude_bot_task.py",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225136"
+    },
+    {
+      "file": "scripts/add_discord_deployment_tasks.py",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225137"
+    },
+    {
+      "file": "scripts/add_github_token_task.py",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225138"
+    },
+    {
+      "file": "scripts/add_unified_monitoring_tasks.py",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225139"
+    },
+    {
+      "file": "scripts/adk_integration/",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225139"
+    },
+    {
+      "file": "scripts/check_all_pending.py",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225140"
+    },
+    {
+      "file": "scripts/check_task_status.py",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225141"
+    },
+    {
+      "file": "scripts/create_monitoring_dashboard.py",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225143"
+    },
+    {
+      "file": "scripts/fix_duplicate_tasks.py",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225144"
+    },
+    {
+      "file": "scripts/monitoring/unified_industrial_monitor.py",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225145"
+    },
+    {
+      "file": "scripts/update_ct055_completed.py",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225145"
+    },
+    {
+      "file": "scripts/update_ct058_progress.py",
+      "status": "??",
+      "timestamp": "2025-06-08T00:15:56.225146"
+    }
+  ],
+  "git_state": {
+    "current_branch": "main",
+    "status": "## main...origin/main\n M Steel_Bonnet\n M ignition-project-scan-endpoint\n?? .claude/ADK_ONBOARDING_GUIDE.md\n?? .claude/adk_enhanced/\n?? ADK_HYBRID_INTEGRATION_PLAN.md\n?? ADK_ONBOARDING_GUIDE.md\n?? CT-058_MONITORING_DASHBOARD_DRAFT.md\n?? CT-066_COMPLETION_SUMMARY.md\n?? DISCORD_BOT_PRODUCTION_MIGRATION.md\n?? HYBRID_ADK_ARCHITECTURE.md\n?? UNIFIED_MONITORING_STRATEGY.md\n?? scripts/.mac_claude_tasks_state.json\n?? scripts/actually_fix_duplicates.py\n?? scripts/add_adk_hybrid_tasks.py\n?? scripts/add_discord_claude_bot_task.py\n?? scripts/add_discord_deployment_tasks.py\n?? scripts/add_github_token_task.py\n?? scripts/add_unified_monitoring_tasks.py\n?? scripts/adk_integration/\n?? scripts/check_all_pending.py\n?? scripts/check_task_status.py\n?? scripts/create_monitoring_dashboard.py\n?? scripts/fix_duplicate_tasks.py\n?? scripts/monitoring/unified_industrial_monitor.py\n?? scripts/update_ct055_completed.py\n?? scripts/update_ct058_progress.py",
+    "timestamp": "2025-06-08T00:15:56.251326"
+  },
+  "monitoring_data": {
+    "discord_bot_status": "active",
+    "google_sheets_connection": "active",
+    "mqtt_brokers": "monitoring",
+    "node_red_status": "running",
+    "timestamp": "2025-06-08T00:15:56.251353",
+    "note": "Monitoring integration to be enhanced"
+  },
+  "discord_state": {
+    "bot_active": true,
+    "last_command": "unknown",
+    "message_queue": [],
+    "timestamp": "2025-06-08T00:15:56.251357"
+  },
+  "sheets_state": {
+    "connection_active": true,
+    "last_update": "2025-06-08T00:15:56.251359",
+    "pending_updates": [],
+    "claude_tasks_tab": "accessible"
+  }
+}

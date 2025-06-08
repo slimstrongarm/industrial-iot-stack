@@ -1,0 +1,154 @@
+{
+  "assignments": [
+    {
+      "task_description": "Update Discord bot webhook configuration",
+      "assignment": {
+        "instance": "mac_claude",
+        "reasoning": "Assigned to mac_claude based on task type 'discord' and availability",
+        "confidence": 0.95,
+        "decision_timestamp": "2025-06-08T00:10:22.766978"
+      },
+      "timestamp": "2025-06-08T00:10:22.766986"
+    },
+    {
+      "task_description": "Deploy Docker containers to production server",
+      "assignment": {
+        "instance": "server_claude",
+        "reasoning": "Assigned to server_claude based on task type 'docker' and availability",
+        "confidence": 0.95,
+        "decision_timestamp": "2025-06-08T00:10:22.767204"
+      },
+      "timestamp": "2025-06-08T00:10:22.767225"
+    },
+    {
+      "task_description": "Create Google Sheets monitoring dashboard",
+      "assignment": {
+        "instance": "mac_claude",
+        "reasoning": "Assigned to mac_claude based on task type 'google_sheets' and availability",
+        "confidence": 0.9,
+        "decision_timestamp": "2025-06-08T00:10:22.767365"
+      },
+      "timestamp": "2025-06-08T00:10:22.767385"
+    },
+    {
+      "task_description": "Install Python packages and update requirements",
+      "assignment": {
+        "instance": "mac_claude",
+        "reasoning": "Assigned to mac_claude based on task type 'python_script' and availability",
+        "confidence": 0.8,
+        "decision_timestamp": "2025-06-08T00:10:22.767525"
+      },
+      "timestamp": "2025-06-08T00:10:22.767549"
+    },
+    {
+      "task_description": "Configure system monitoring alerts",
+      "assignment": {
+        "instance": "server_claude",
+        "reasoning": "Assigned to server_claude based on task type 'monitoring' and availability",
+        "confidence": 0.85,
+        "decision_timestamp": "2025-06-08T00:10:22.767694"
+      },
+      "timestamp": "2025-06-08T00:10:22.767717"
+    },
+    {
+      "task_description": "Update documentation with new API endpoints",
+      "assignment": {
+        "instance": "mac_claude",
+        "reasoning": "Assigned to mac_claude based on task type 'documentation' and availability",
+        "confidence": 0.85,
+        "decision_timestamp": "2025-06-08T00:10:22.767865"
+      },
+      "timestamp": "2025-06-08T00:10:22.767886"
+    },
+    {
+      "task_description": "Install ADK Framework",
+      "assignment": {
+        "instance": "mac_claude",
+        "reasoning": "Assigned to mac_claude based on task type 'python_script' and availability",
+        "confidence": 0.8,
+        "decision_timestamp": "2025-06-08T00:13:03.917687"
+      },
+      "timestamp": "2025-06-08T00:13:03.917813"
+    },
+    {
+      "task_description": "Install ADK Framework with state persistence, coordination, and conflict prevention",
+      "assignment": {
+        "instance": "mac_claude",
+        "reasoning": "Assigned to mac_claude based on task type 'python_script' and availability",
+        "confidence": 0.8,
+        "decision_timestamp": "2025-06-08T00:13:03.918371"
+      },
+      "timestamp": "2025-06-08T00:13:03.918398"
+    },
+    {
+      "task_description": "Update Discord bot webhook configuration",
+      "assignment": {
+        "instance": "mac_claude",
+        "reasoning": "Assigned to mac_claude based on task type 'discord' and availability",
+        "confidence": 0.95,
+        "decision_timestamp": "2025-06-08T00:15:56.277176"
+      },
+      "timestamp": "2025-06-08T00:15:56.277294"
+    },
+    {
+      "task_description": "Deploy Docker containers to production server",
+      "assignment": {
+        "instance": "server_claude",
+        "reasoning": "Assigned to server_claude based on task type 'docker' and availability",
+        "confidence": 0.95,
+        "decision_timestamp": "2025-06-08T00:15:56.277663"
+      },
+      "timestamp": "2025-06-08T00:15:56.277696"
+    },
+    {
+      "task_description": "Create Google Sheets monitoring dashboard",
+      "assignment": {
+        "instance": "mac_claude",
+        "reasoning": "Assigned to mac_claude based on task type 'google_sheets' and availability",
+        "confidence": 0.9,
+        "decision_timestamp": "2025-06-08T00:15:56.277899"
+      },
+      "timestamp": "2025-06-08T00:15:56.277927"
+    },
+    {
+      "task_description": "Install Python packages and update requirements",
+      "assignment": {
+        "instance": "mac_claude",
+        "reasoning": "Assigned to mac_claude based on task type 'python_script' and availability",
+        "confidence": 0.8,
+        "decision_timestamp": "2025-06-08T00:15:56.278127"
+      },
+      "timestamp": "2025-06-08T00:15:56.278155"
+    },
+    {
+      "task_description": "Configure system monitoring alerts",
+      "assignment": {
+        "instance": "server_claude",
+        "reasoning": "Assigned to server_claude based on task type 'monitoring' and availability",
+        "confidence": 0.85,
+        "decision_timestamp": "2025-06-08T00:15:56.278350"
+      },
+      "timestamp": "2025-06-08T00:15:56.278381"
+    },
+    {
+      "task_description": "Update documentation with new API endpoints",
+      "assignment": {
+        "instance": "mac_claude",
+        "reasoning": "Assigned to mac_claude based on task type 'documentation' and availability",
+        "confidence": 0.85,
+        "decision_timestamp": "2025-06-08T00:15:56.278582"
+      },
+      "timestamp": "2025-06-08T00:15:56.278611"
+    }
+  ],
+  "files_in_use": {},
+  "git_operations": {},
+  "task_assignments": {
+    "CT-066": {
+      "instance": "mac_claude",
+      "assigned_at": "2025-06-08T00:15:57.169638",
+      "status": "completed",
+      "completed_at": "2025-06-08T00:15:57.170551"
+    }
+  }
+}
