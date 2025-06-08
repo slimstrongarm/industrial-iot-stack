@@ -376,7 +376,7 @@ jobs:
         TASK_TYPE: ${{ github.event.inputs.task_type || 'health-check' }}
         GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
       run: |
-        cat > claude_max_instructions.md << EOF
+        cat > claude_max_instructions.md << 'EOF'
         # 🤖 Claude Max Session Instructions
         
         **Automation Task**: $TASK_TYPE
