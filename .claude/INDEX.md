@@ -54,6 +54,16 @@
 
 ## 🛠️ Development Tools
 
+### ADK Hybrid Architecture
+- **[ADK Onboarding Guide](ADK_ONBOARDING_GUIDE.md)** - Quick start for Claude instances
+- **[Hybrid ADK Architecture](HYBRID_ADK_ARCHITECTURE.md)** - Complete technical specification
+- **[CT-066 Completion Summary](CT-066_COMPLETION_SUMMARY.md)** - Implementation details
+- **[State Persistence Engine](.claude/adk_enhanced/state_persistence.py)** - Instant context recovery
+- **[Coordination Engine](.claude/adk_enhanced/coordination_engine.py)** - Smart task assignment
+- **[Conflict Prevention](.claude/adk_enhanced/conflict_prevention.py)** - Work coordination
+- **[Enhanced Mac Worker](scripts/adk_integration/enhanced_mac_worker.py)** - ADK-powered automation
+
+
 ### Scripts & Utilities
 - **[Setup Scripts](scripts/setup/)** - Installation automation
 - **[Testing Scripts](scripts/testing/)** - Validation tools
@@ -153,6 +163,6 @@
 - **Google Sheets**: Progress tracking and analytics
 - **GitHub Issues**: Bug reports and feature requests
 
-**Last Updated**: 2025-06-04 23:30:00 UTC  
+**Last Updated**: 2025-06-08 00:39:07 UTC  
 **Repository Organization**: 5/5 ⭐  
 **Ready for Production**: ✅
