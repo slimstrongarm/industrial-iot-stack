@@ -1,0 +1,70 @@
+{
+  "protocols": {
+    "modbus": {
+      "enabled": true,
+      "variants": ["tcp", "rtu"],
+      "default_port": 502,
+      "unit_ids": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      "function_codes": [1, 2, 3, 4],
+      "timeout": 3,
+      "retries": 2
+    },
+    "opcua": {
+      "enabled": true,
+      "default_ports": [4840, 4841],
+      "security_policies": ["None", "Basic128Rsa15", "Basic256"],
+      "message_modes": ["None", "Sign", "SignAndEncrypt"],
+      "timeout": 10,
+      "discovery_timeout": 5
+    },
+    "ethernet_ip": {
+      "enabled": true,
+      "default_port": 44818,
+      "encapsulation_timeout": 5,
+      "list_services": true,
+      "list_identity": true,
+      "get_attribute_list": true
+    },
+    "mqtt": {
+      "enabled": true,
+      "default_ports": [1883, 8883],
+      "username": null,
+      "password": null,
+      "tls_enabled": false,
+      "keep_alive": 60,
+      "timeout": 10
+    },
+    "bacnet": {
+      "enabled": false,
+      "default_port": 47808,
+      "timeout": 5
+    },
+    "profinet": {
+      "enabled": false,
+      "discovery_port": 34962,
+      "timeout": 3
+    }
+  },
+  "device_fingerprints": {
+    "allen_bradley": {
+      "identifiers": ["Rockwell", "Allen-Bradley", "ControlLogix", "CompactLogix"],
+      "ports": [44818, 2222],
+      "oui_prefixes": ["00:00:BC", "AC:8B:A9", "00:1D:9C"]
+    },
+    "schneider": {
+      "identifiers": ["Schneider", "Modicon", "Telemecanique"],
+      "ports": [502, 4840],
+      "oui_prefixes": ["00:80:F4", "00:C0:F2", "00:06:29"]
+    },
+    "siemens": {
+      "identifiers": ["Siemens", "SIMATIC", "S7"],
+      "ports": [102, 4840, 502],
+      "oui_prefixes": ["00:0E:8C", "A0:36:9F", "00:1B:1B"]
+    },
+    "omron": {
+      "identifiers": ["Omron", "CJ", "CP", "NJ"],
+      "ports": [9600, 4840, 502],
+      "oui_prefixes": ["00:00:CD", "00:12:E2", "5C:F9:DD"]
+    }
+  }
+}

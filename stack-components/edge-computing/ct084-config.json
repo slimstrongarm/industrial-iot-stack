@@ -1,0 +1,191 @@
+{
+    "device_info": {
+        "device_id": "ct084-parachute-drop-001",
+        "device_type": "CT-084-Parachute-Drop",
+        "version": "1.0.0",
+        "deployment_type": "industrial-edge",
+        "location": "CT084/ParachuteDrop/EdgeNode001",
+        "description": "CT-084 Parachute Drop System Edge Node for Rapid Industrial Deployment"
+    },
+    "discovery": {
+        "enabled": true,
+        "scan_interval": 30,
+        "phidget_enabled": true,
+        "network_enabled": true,
+        "auto_tag_creation": true,
+        "ai_classification": true,
+        "confidence_threshold": 0.7
+    },
+    "network": {
+        "discovery_enabled": true,
+        "discovery_port": 8084,
+        "opcua_endpoint": "opc.tcp://ignition:62541",
+        "opcua_namespace": "CT084",
+        "mqtt_broker": "emqx",
+        "mqtt_port": 1883,
+        "mqtt_topic_prefix": "CT084/EdgeNode",
+        "modbus_enabled": true,
+        "modbus_port": 502
+    },
+    "sensors": {
+        "phidget_hub_enabled": true,
+        "auto_discovery": true,
+        "scan_interval": 30,
+        "data_retention_hours": 168,
+        "buffer_size": 1000,
+        "quality_validation": true,
+        "range_checking": true
+    },
+    "edge_computing": {
+        "node_red_enabled": true,
+        "node_red_port": 1880,
+        "local_processing": true,
+        "buffering_enabled": true,
+        "store_and_forward": true,
+        "compression_enabled": false
+    },
+    "monitoring": {
+        "health_check_interval": 60,
+        "log_level": "INFO",
+        "metrics_enabled": true,
+        "performance_monitoring": true,
+        "alert_thresholds": {
+            "cpu_percent": 80,
+            "memory_percent": 85,
+            "temperature_celsius": 70,
+            "disk_percent": 90,
+            "network_latency_ms": 1000
+        }
+    },
+    "ai_intelligence": {
+        "enabled": true,
+        "pattern_matching": true,
+        "context_classification": true,
+        "tag_optimization": true,
+        "anomaly_detection": false,
+        "learning_mode": false
+    },
+    "industrial_protocols": {
+        "opcua": {
+            "enabled": true,
+            "security_mode": "None",
+            "security_policy": "None",
+            "session_timeout": 60000,
+            "publish_interval": 1000,
+            "namespace_uri": "urn:ct084:parachute-drop",
+            "application_uri": "urn:ct084:discovery-agent"
+        },
+        "mqtt": {
+            "enabled": true,
+            "qos": 1,
+            "retain": false,
+            "keep_alive": 60,
+            "clean_session": true,
+            "username": "",
+            "password": ""
+        },
+        "modbus": {
+            "enabled": false,
+            "unit_id": 1,
+            "timeout": 5,
+            "retry_count": 3
+        }
+    },
+    "data_management": {
+        "local_storage": true,
+        "backup_enabled": true,
+        "sync_enabled": true,
+        "compression": false,
+        "encryption": false,
+        "retention_policy": {
+            "raw_data_days": 7,
+            "aggregated_data_days": 30,
+            "archive_data_days": 365
+        }
+    },
+    "deployment": {
+        "auto_update_enabled": false,
+        "remote_access_enabled": true,
+        "backup_enabled": true,
+        "factory_reset_pin": 18,
+        "provisioning_mode": false,
+        "deployment_stage": "production"
+    },
+    "security": {
+        "authentication_required": false,
+        "encryption_enabled": false,
+        "certificate_validation": false,
+        "firewall_enabled": false,
+        "audit_logging": true
+    },
+    "advanced_features": {
+        "edge_analytics": true,
+        "predictive_maintenance": false,
+        "machine_learning": false,
+        "digital_twin": false,
+        "blockchain_integration": false
+    },
+    "tag_intelligence": {
+        "uns_compliance": true,
+        "auto_naming": true,
+        "semantic_enrichment": true,
+        "metadata_generation": true,
+        "relationship_mapping": true,
+        "context_aware_grouping": true
+    },
+    "phidget_configuration": {
+        "hub_detection": true,
+        "auto_calibration": false,
+        "error_recovery": true,
+        "hot_swap_support": true,
+        "advanced_features": false,
+        "sensor_types": {
+            "humidity": {
+                "enabled": true,
+                "update_rate": 1000,
+                "precision": 2,
+                "range_min": 0.0,
+                "range_max": 100.0,
+                "units": "%RH"
+            },
+            "temperature": {
+                "enabled": true,
+                "update_rate": 1000,
+                "precision": 2,
+                "range_min": -40.0,
+                "range_max": 125.0,
+                "units": "°C"
+            },
+            "voltage": {
+                "enabled": true,
+                "update_rate": 100,
+                "precision": 3,
+                "range_min": 0.0,
+                "range_max": 30.0,
+                "units": "V"
+            },
+            "current": {
+                "enabled": true,
+                "update_rate": 100,
+                "precision": 3,
+                "range_min": 0.0,
+                "range_max": 20.0,
+                "units": "mA"
+            }
+        }
+    },
+    "alerting": {
+        "enabled": true,
+        "channels": ["log", "mqtt"],
+        "severity_levels": ["INFO", "WARNING", "ERROR", "CRITICAL"],
+        "rate_limiting": true,
+        "escalation": false
+    },
+    "integration": {
+        "ignition_edge": false,
+        "aws_iot": false,
+        "azure_iot": false,
+        "google_iot": false,
+        "custom_apis": []
+    }
+}

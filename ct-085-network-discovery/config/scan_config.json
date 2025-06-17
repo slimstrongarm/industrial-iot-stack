@@ -1,0 +1,78 @@
+{
+  "scan_settings": {
+    "default_timeout": 5,
+    "max_concurrent_scans": 20,
+    "rate_limit_delay": 0.1,
+    "retry_attempts": 3,
+    "network_ranges": [
+      "192.168.1.0/24",
+      "10.0.0.0/24",
+      "172.16.0.0/24"
+    ]
+  },
+  "protocols": {
+    "modbus": {
+      "enabled": true,
+      "ports": [502, 503],
+      "function_codes": [1, 2, 3, 4],
+      "slave_ids": [1, 2, 3, 4, 5, 10, 15, 20, 247]
+    },
+    "opcua": {
+      "enabled": true,
+      "ports": [4840, 4841, 4842],
+      "discovery_urls": [
+        "opc.tcp://{host}:4840/freeopcua/server/",
+        "opc.tcp://{host}:4840",
+        "opc.tcp://{host}:4841"
+      ]
+    },
+    "mqtt": {
+      "enabled": true,
+      "ports": [1883, 8883],
+      "client_id_prefix": "discovery_scanner_",
+      "keepalive": 60
+    },
+    "ethernet_ip": {
+      "enabled": true,
+      "ports": [44818, 2222],
+      "vendor_ids": [1, 2, 5, 47]
+    }
+  },
+  "ai_classification": {
+    "enabled": true,
+    "confidence_threshold": 0.7,
+    "model_path": "ai_classification/models/device_classifier.pkl",
+    "features": [
+      "vendor_name",
+      "device_name",
+      "firmware_version",
+      "supported_protocols",
+      "open_ports",
+      "response_patterns"
+    ]
+  },
+  "security": {
+    "scan_rate_limit": 10,
+    "max_scan_duration": 300,
+    "whitelist_networks": [],
+    "blacklist_networks": [],
+    "require_authentication": false
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "logs/network_discovery.log",
+    "max_size": "10MB",
+    "backup_count": 5
+  },
+  "database": {
+    "type": "sqlite",
+    "path": "database/discovery.db",
+    "backup_interval": 3600
+  },
+  "api": {
+    "enabled": true,
+    "host": "0.0.0.0",
+    "port": 8085,
+    "authentication": false
+  }
+}
