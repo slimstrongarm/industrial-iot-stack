@@ -1,0 +1,149 @@
+{
+  "CT-005": {
+    "id": "CT-005",
+    "title": "Documentation",
+    "priority": "Medium",
+    "status": "Complete",
+    "assigned_to": "Mac Claude"
+  },
+  "CT-009": {
+    "id": "CT-009",
+    "title": "Repository Commit",
+    "priority": "Medium",
+    "status": "Complete",
+    "assigned_to": "Mac Claude"
+  },
+  "CT-012": {
+    "id": "CT-012",
+    "title": "Documentation",
+    "priority": "Medium",
+    "status": "Complete",
+    "assigned_to": "Mac Claude"
+  },
+  "CT-015": {
+    "id": "CT-015",
+    "title": "Unified Monitor",
+    "priority": "Medium",
+    "status": "Complete",
+    "assigned_to": "Mac Claude"
+  },
+  "CT-018": {
+    "id": "CT-018",
+    "title": "Formbricks Research",
+    "priority": "Medium",
+    "status": "Complete",
+    "assigned_to": "Mac Claude"
+  },
+  "CT-020": {
+    "id": "CT-020",
+    "title": "Hybrid Integration",
+    "priority": "Medium",
+    "status": "Pending",
+    "assigned_to": "Mac Claude"
+  },
+  "CT-021": {
+    "id": "CT-021",
+    "title": "Discord Integration",
+    "priority": "High",
+    "status": "Complete",
+    "assigned_to": "Mac Claude"
+  },
+  "CT-028": {
+    "id": "CT-028",
+    "title": "Node Red flows",
+    "priority": "High",
+    "status": "Complete",
+    "assigned_to": "Mac Claude"
+  },
+  "CT-030": {
+    "id": "CT-030",
+    "title": "GitHub Actions",
+    "priority": "Medium",
+    "status": "Blocked",
+    "assigned_to": "Mac Claude"
+  },
+  "CT-035": {
+    "id": "CT-035",
+    "title": "Discord Setup",
+    "priority": "High",
+    "status": "Complete",
+    "assigned_to": "Mac Claude"
+  },
+  "CT-036": {
+    "id": "CT-036",
+    "title": "Discord Deploy",
+    "priority": "High",
+    "status": "Complete",
+    "assigned_to": "Mac Claude"
+  },
+  "CT-037": {
+    "id": "CT-037",
+    "title": "Integration Test",
+    "priority": "Medium",
+    "status": "Complete",
+    "assigned_to": "Mac Claude"
+  },
+  "CT-038": {
+    "id": "CT-038",
+    "title": "Brewery Analysis",
+    "priority": "High",
+    "status": "Complete",
+    "assigned_to": "Mac Claude"
+  },
+  "CT-039": {
+    "id": "CT-039",
+    "title": "Node-RED Cleanup",
+    "priority": "High",
+    "status": "Complete",
+    "assigned_to": "Mac Claude"
+  },
+  "CT-040": {
+    "id": "CT-040",
+    "title": "UI Restoration",
+    "priority": "High",
+    "status": "Complete",
+    "assigned_to": "Mac Claude"
+  },
+  "CT-041": {
+    "id": "CT-041",
+    "title": "Connection Test",
+    "priority": "High",
+    "status": "Complete",
+    "assigned_to": "Mac Claude"
+  },
+  "CT-042": {
+    "id": "CT-042",
+    "title": "Integration Test",
+    "priority": "High",
+    "status": "Pending",
+    "assigned_to": "Mac Claude"
+  },
+  "CT-043": {
+    "id": "CT-043",
+    "title": "MQTT Setup",
+    "priority": "Medium",
+    "status": "Blocked",
+    "assigned_to": "Mac Claude"
+  },
+  "CT-044": {
+    "id": "CT-044",
+    "title": "Brewery Testing",
+    "priority": "High",
+    "status": "Pending",
+    "assigned_to": "Mac Claude"
+  },
+  "CT-045": {
+    "id": "CT-045",
+    "title": "GitHub Tokens Documentation",
+    "priority": "Medium",
+    "status": "Complete",
+    "assigned_to": "Mac Claude"
+  },
+  "CT-046": {
+    "id": "CT-046",
+    "title": "Discord Claude Bot Enhancement",
+    "priority": "High",
+    "status": "Complete",
+    "assigned_to": "Mac Claude"
+  }
+}

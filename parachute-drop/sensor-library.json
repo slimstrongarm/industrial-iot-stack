@@ -1,0 +1,179 @@
+{
+  "parachute_drop_sensor_library": {
+    "port_configurations": {
+      "temperature_sensors": [
+        {
+          "name": "RTD_PT100",
+          "type": "RTD temperature sensor",
+          "interface": "phidget_temperature",
+          "range": "-50 to 200°C",
+          "accuracy": "±0.1°C",
+          "use_cases": ["Process monitoring", "Ambient temperature", "Equipment temperature"]
+        },
+        {
+          "name": "Thermocouple_K",
+          "type": "K-type thermocouple",
+          "interface": "phidget_thermocouple",
+          "range": "-200 to 1372°C",
+          "accuracy": "±0.75°C",
+          "use_cases": ["High temperature processes", "Furnace monitoring", "Engine temperature"]
+        },
+        {
+          "name": "Ambient_DHT22",
+          "type": "Digital humidity/temperature",
+          "interface": "digital_input",
+          "range": "-40 to 80°C, 0-100% RH",
+          "accuracy": "±0.5°C, ±2% RH",
+          "use_cases": ["HVAC monitoring", "Environmental control", "Storage conditions"]
+        }
+      ],
+      "current_sensors": [
+        {
+          "name": "AC_Current_30A",
+          "type": "Split-core AC current transformer",
+          "interface": "phidget_current",
+          "range": "0-30A AC",
+          "accuracy": "±1% of reading",
+          "use_cases": ["Motor current monitoring", "Panel load monitoring", "Equipment health"]
+        },
+        {
+          "name": "DC_Current_20A",
+          "type": "Hall effect DC current sensor",
+          "interface": "phidget_voltage_ratio",
+          "range": "0-20A DC",
+          "accuracy": "±2% of reading",
+          "scaling": "2.5V = 0A, 5V = 20A",
+          "use_cases": ["Battery monitoring", "DC motor current", "Solar system monitoring"]
+        },
+        {
+          "name": "Precision_AC_50A",
+          "type": "Precision AC current transformer",
+          "interface": "phidget_current",
+          "range": "0-50A AC",
+          "accuracy": "±0.5% of reading",
+          "use_cases": ["Main panel monitoring", "Large motor monitoring", "Power quality analysis"]
+        }
+      ],
+      "digital_inputs": [
+        {
+          "name": "Motor_Contactor_Status",
+          "type": "24V AC/DC digital input",
+          "interface": "phidget_digital_input",
+          "range": "5-30V DC, 5-24V AC",
+          "use_cases": ["Motor run status", "Valve position", "Alarm states", "Safety interlocks"]
+        },
+        {
+          "name": "Proximity_Sensor",
+          "type": "Inductive proximity sensor",
+          "interface": "phidget_digital_input",
+          "range": "PNP/NPN compatible",
+          "use_cases": ["Position sensing", "Part detection", "Conveyor monitoring"]
+        },
+        {
+          "name": "Pressure_Switch",
+          "type": "Digital pressure switch",
+          "interface": "phidget_digital_input",
+          "range": "Dry contact",
+          "use_cases": ["High/low pressure alarms", "Filter status", "Tank level switches"]
+        }
+      ],
+      "analog_inputs": [
+        {
+          "name": "Pressure_Transmitter",
+          "type": "4-20mA pressure transmitter",
+          "interface": "phidget_voltage_ratio",
+          "range": "4-20mA = 0-150 PSI",
+          "scaling": "Linear 4-20mA to engineering units",
+          "use_cases": ["Process pressure", "Hydraulic pressure", "Pneumatic pressure"]
+        },
+        {
+          "name": "Level_Transmitter",
+          "type": "4-20mA ultrasonic level",
+          "interface": "phidget_voltage_ratio", 
+          "range": "4-20mA = 0-100% level",
+          "scaling": "4mA = Empty, 20mA = Full",
+          "use_cases": ["Tank level", "Silo level", "Liquid level monitoring"]
+        },
+        {
+          "name": "Variable_Speed_Drive",
+          "type": "VFD speed feedback",
+          "interface": "phidget_voltage",
+          "range": "0-10V = 0-100% speed",
+          "scaling": "Linear 0-10V to % speed",
+          "use_cases": ["Motor speed monitoring", "Fan speed", "Pump speed"]
+        }
+      ],
+      "specialty_sensors": [
+        {
+          "name": "Vibration_Accelerometer",
+          "type": "3-axis accelerometer",
+          "interface": "phidget_accelerometer",
+          "range": "±8g on 3 axes",
+          "use_cases": ["Motor vibration", "Equipment health", "Predictive maintenance"]
+        },
+        {
+          "name": "Power_Monitor",
+          "type": "3-phase power monitor",
+          "interface": "modbus_rtu",
+          "range": "Voltage, current, power, energy",
+          "use_cases": ["Energy monitoring", "Power quality", "Load analysis"]
+        }
+      ]
+    },
+    "quick_deployment_kits": {
+      "motor_monitoring_kit": {
+        "sensors": [
+          "AC_Current_30A",
+          "Motor_Contactor_Status", 
+          "Vibration_Accelerometer",
+          "RTD_PT100"
+        ],
+        "description": "Complete motor health monitoring"
+      },
+      "process_monitoring_kit": {
+        "sensors": [
+          "Pressure_Transmitter",
+          "RTD_PT100",
+          "Level_Transmitter",
+          "Motor_Contactor_Status"
+        ],
+        "description": "Process vessel monitoring"
+      },
+      "hvac_monitoring_kit": {
+        "sensors": [
+          "Ambient_DHT22",
+          "AC_Current_30A",
+          "Variable_Speed_Drive",
+          "Digital_Input"
+        ],
+        "description": "HVAC system monitoring"
+      },
+      "electrical_monitoring_kit": {
+        "sensors": [
+          "Precision_AC_50A",
+          "Power_Monitor",
+          "Digital_Input",
+          "Ambient_DHT22"
+        ],
+        "description": "Electrical panel monitoring"
+      }
+    },
+    "auto_configuration": {
+      "current_thresholds": {
+        "motor_running": "> 2A",
+        "motor_overload": "> 80% nameplate",
+        "no_load": "< 10% nameplate"
+      },
+      "temperature_thresholds": {
+        "normal_operation": "20-80°C",
+        "high_temperature": "> 85°C", 
+        "critical_temperature": "> 95°C"
+      },
+      "digital_input_logic": {
+        "motor_contactor": "HIGH = Running, LOW = Stopped",
+        "alarm_input": "HIGH = Normal, LOW = Alarm",
+        "safety_circuit": "HIGH = Safe, LOW = Fault"
+      }
+    }
+  }
+}

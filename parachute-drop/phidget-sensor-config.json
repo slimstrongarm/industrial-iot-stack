@@ -1,0 +1,83 @@
+{
+  "parachute_drop_sensors": {
+    "hub_config": {
+      "serial_number": "auto_detect",
+      "ports": 6,
+      "update_rate": 1000
+    },
+    "sensor_mapping": {
+      "port_0": {
+        "name": "Temperature_Primary",
+        "type": "temperature",
+        "unit": "celsius",
+        "mqtt_topic": "parachute/sensors/temp_1",
+        "dashboard_widget": "gauge",
+        "alert_threshold": {
+          "high": 80,
+          "low": 10
+        }
+      },
+      "port_1": {
+        "name": "Pressure_Main",
+        "type": "pressure",
+        "unit": "psi",
+        "mqtt_topic": "parachute/sensors/pressure_1",
+        "dashboard_widget": "gauge",
+        "alert_threshold": {
+          "high": 100,
+          "low": 20
+        }
+      },
+      "port_2": {
+        "name": "Humidity_Ambient",
+        "type": "humidity",
+        "unit": "percent",
+        "mqtt_topic": "parachute/sensors/humidity_1",
+        "dashboard_widget": "chart",
+        "alert_threshold": {
+          "high": 80,
+          "low": 20
+        }
+      },
+      "port_3": {
+        "name": "Vibration_Motor",
+        "type": "accelerometer",
+        "unit": "g",
+        "mqtt_topic": "parachute/sensors/vibration_1",
+        "dashboard_widget": "level",
+        "alert_threshold": {
+          "high": 2.5
+        }
+      },
+      "port_4": {
+        "name": "Current_Monitor",
+        "type": "current",
+        "unit": "amps",
+        "mqtt_topic": "parachute/sensors/current_1",
+        "dashboard_widget": "chart",
+        "alert_threshold": {
+          "high": 15
+        }
+      },
+      "port_5": {
+        "name": "Universal_Input",
+        "type": "voltage",
+        "unit": "volts",
+        "mqtt_topic": "parachute/sensors/voltage_1",
+        "dashboard_widget": "text",
+        "scaling": {
+          "min_voltage": 0,
+          "max_voltage": 10,
+          "min_value": 0,
+          "max_value": 100
+        }
+      }
+    },
+    "discovery_config": {
+      "auto_detect_sensors": true,
+      "create_mqtt_topics": true,
+      "generate_dashboard": true,
+      "log_to_file": true
+    }
+  }
+}

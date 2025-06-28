@@ -1,0 +1,41 @@
+{
+  "task": "CT-022",
+  "purpose": "Development coordination bot for Josh",
+  "quick_steps": [
+    {
+      "step": 1,
+      "action": "Create Discord Application",
+      "url": "https://discord.com/developers/applications",
+      "details": [
+        "Click 'New Application'",
+        "Name: 'IoT Stack Claude Bot'",
+        "Create application"
+      ]
+    },
+    {
+      "step": 2,
+      "action": "Create Bot User",
+      "details": [
+        "Go to 'Bot' section",
+        "Click 'Add Bot'",
+        "Copy bot token (save securely)",
+        "Enable 'Message Content Intent'"
+      ]
+    },
+    {
+      "step": 3,
+      "action": "Generate Invite Link",
+      "details": [
+        "Go to 'OAuth2' \u2192 'URL Generator'",
+        "Select 'bot' scope",
+        "Select permissions: Send Messages, Read Message History, Use Slash Commands",
+        "Copy generated URL"
+      ]
+    }
+  ],
+  "bot_code_template": "\nimport discord\nfrom discord.ext import commands\nimport os\nimport subprocess\nimport asyncio\n\n# Bot setup\nintents = discord.Intents.default()\nintents.message_content = True\nbot = commands.Bot(command_prefix='!', intents=intents)\n\n@bot.event\nasync def on_ready():\n    print(f'{bot.user} has connected to Discord!')\n    # Find the correct channels\n    for guild in bot.guilds:\n        for channel in guild.channels:\n            if channel.name == 'server-claude':\n                await channel.send(\"\ud83d\udfe2 Server Claude bot online and monitoring!\")\n\n@bot.event\nasync def on_message(message):\n    # Don't respond to self\n    if message.author == bot.user:\n        return\n    \n    # Monitor server-claude channel\n    if message.channel.name == 'server-claude':\n        # Natural language processing\n        if 'status' in message.content.lower():\n            # Check Docker status\n            result = subprocess.run(['docker', 'ps', '--format', 'table {{.Names}}\t{{.Status}}'], \n                                  capture_output=True, text=True)\n            await message.channel.send(f\"```\n{result.stdout}\n```\")\n        \n        elif 'mqtt' in message.content.lower():\n            # Check MQTT broker\n            result = subprocess.run(['docker', 'logs', '--tail', '10', 'emqx'], \n                                  capture_output=True, text=True)\n            await message.channel.send(f\"MQTT Broker logs:\n```\n{result.stdout[-1000:]}\n```\")\n        \n        elif 'help' in message.content.lower():\n            help_text = '''\n**Server Claude Commands:**\n\u2022 Ask about **status** - Show Docker containers\n\u2022 Mention **mqtt** - Check MQTT broker\n\u2022 Say **restart [container]** - Restart a container\n\u2022 Ask about **logs** - Show recent logs\n\u2022 Mention **deploy** - Deploy latest changes\n            '''\n            await message.channel.send(help_text)\n\n# Run bot\nbot.run(os.environ['DISCORD_BOT_TOKEN'])\n",
+  "deployment": {
+    "dockerfile": "\nFROM python:3.9-slim\nWORKDIR /app\nRUN pip install discord.py python-dotenv\nCOPY bot.py .\nCMD [\"python\", \"bot.py\"]\n",
+    "docker_compose": "\nservices:\n  discord-bot:\n    build: .\n    container_name: discord-claude-bot\n    environment:\n      - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}\n    volumes:\n      - /var/run/docker.sock:/var/run/docker.sock\n    restart: unless-stopped\n"
+  }
+}

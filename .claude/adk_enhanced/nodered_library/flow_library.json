@@ -1,0 +1,41 @@
+{
+  "hlt_optimization": {
+    "equipment": "hlt",
+    "recommendations": [
+      "Implement rate limiting for 5s intervals",
+      "Add data validation for safety limits: {'max_temp': 85, 'min_temp': 10}",
+      "Use connection pooling for MQTT subscriptions",
+      "Implement exponential backoff for connection retries",
+      "Add temperature trend analysis for predictive alerts",
+      "Implement PID controller feedback optimization"
+    ],
+    "created": "2025-06-08T00:58:33.764591",
+    "pattern_type": "optimization"
+  },
+  "fermentation_optimization": {
+    "equipment": "fermentation",
+    "recommendations": [
+      "Implement rate limiting for 10s intervals",
+      "Add data validation for safety limits: {'max_temp': 30, 'max_pressure': 15}",
+      "Use connection pooling for MQTT subscriptions",
+      "Implement exponential backoff for connection retries",
+      "Add multi-vessel monitoring aggregation",
+      "Implement pressure trend monitoring for fermentation stages"
+    ],
+    "created": "2025-06-08T00:58:33.765017",
+    "pattern_type": "optimization"
+  },
+  "glycol_optimization": {
+    "equipment": "glycol",
+    "recommendations": [
+      "Implement rate limiting for 15s intervals",
+      "Add data validation for safety limits: {'min_temp': -5, 'max_temp': 5}",
+      "Use connection pooling for MQTT subscriptions",
+      "Implement exponential backoff for connection retries",
+      "Add flow rate monitoring for circulation efficiency",
+      "Implement temperature differential alerts"
+    ],
+    "created": "2025-06-08T00:58:33.765384",
+    "pattern_type": "optimization"
+  }
+}
