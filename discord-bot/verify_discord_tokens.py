@@ -4,9 +4,10 @@
 import base64
 import re
 
-# The tokens from the scripts
-MAC_TOKEN = 'MTM4MTMxQxOTk0NTk3NTc3Mzc3OA.G9KB9Q.jODzGUt8TnHyaqAAy0KbB4tdalezysXG-_6xJ4'
-SERVER_TOKEN = 'MTM4MTMzNjM1OTE5Njk1MDU5OA.GNW9ge.4BHWL_xhn8AdNqoMT_cQY2gse0neDPb-TxHLG4'
+# The tokens from environment variables
+import os
+MAC_TOKEN = os.environ.get('MAC_DISCORD_BOT_TOKEN', '')
+SERVER_TOKEN = os.environ.get('SERVER_DISCORD_BOT_TOKEN', '')
 
 def verify_token_format(token, name):
     """Verify Discord token format"""

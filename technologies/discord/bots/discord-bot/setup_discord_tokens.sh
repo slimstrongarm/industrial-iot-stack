@@ -6,10 +6,10 @@ echo "🤖 Setting up Discord Bot Tokens"
 echo "=================================="
 
 # Mac Claude Bot Token (MCB)
-export MAC_DISCORD_BOT_TOKEN='MTM4MTMxQxOTk0NTk3NTc3Mzc3OA.G9KB9Q.jODzGUt8TnHyaqAAy0KbB4tdalezysXG-_6xJ4'
+export MAC_DISCORD_BOT_TOKEN="${MAC_DISCORD_BOT_TOKEN:-}"
 
 # Server Claude Bot Token (SCB) 
-export SERVER_DISCORD_BOT_TOKEN='MTM4MTMzNjM1OTE5Njk1MDU5OA.GNW9ge.4BHWL_xhn8AdNqoMT_cQY2gse0neDPb-TxHLG4'
+export SERVER_DISCORD_BOT_TOKEN="${SERVER_DISCORD_BOT_TOKEN:-}"
 
 echo "✅ Mac Claude Bot Token: ${MAC_DISCORD_BOT_TOKEN:0:20}..."
 echo "✅ Server Claude Bot Token: ${SERVER_DISCORD_BOT_TOKEN:0:20}..."

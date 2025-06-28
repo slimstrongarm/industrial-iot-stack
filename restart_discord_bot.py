@@ -12,8 +12,8 @@ try:
 except:
     print("No existing processes found")
 
-# Set environment
-os.environ['DISCORD_BOT_TOKEN'] = 'MTM4MDQxOTk0NTk3NTc3OTM3OA.G9KB9Q.jODzGUt8TnHyaqAAy0KbB4tdalezysXG-_6xJ4'
+# Set environment from environment variable
+os.environ['DISCORD_BOT_TOKEN'] = os.environ.get('DISCORD_BOT_TOKEN', '')
 
 # Change to project directory
 os.chdir('/Users/joshpayneair/Desktop/industrial-iot-stack')

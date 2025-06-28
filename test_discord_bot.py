@@ -4,9 +4,9 @@
 import os
 import socket
 
-# Set the Discord bot tokens
-os.environ['MAC_DISCORD_BOT_TOKEN'] = 'MTM4MTMxQxOTk0NTk3NTc3Mzc3OA.G9KB9Q.jODzGUt8TnHyaqAAy0KbB4tdalezysXG-_6xJ4'
-os.environ['SERVER_DISCORD_BOT_TOKEN'] = 'MTM4MTMzNjM1OTE5Njk1MDU5OA.GNW9ge.4BHWL_xhn8AdNqoMT_cQY2gse0neDPb-TxHLG4'
+# Set the Discord bot tokens from environment
+os.environ['MAC_DISCORD_BOT_TOKEN'] = os.environ.get('MAC_DISCORD_BOT_TOKEN', '')
+os.environ['SERVER_DISCORD_BOT_TOKEN'] = os.environ.get('SERVER_DISCORD_BOT_TOKEN', '')
 
 print("🤖 Discord Bot Token Test")
 print("=" * 40)

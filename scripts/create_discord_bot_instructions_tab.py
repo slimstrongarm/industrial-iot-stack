@@ -89,7 +89,7 @@ instructions = [
     ["  discord-bot:", "", "", "", "", "", "", "", "", ""],
     ["    build: .", "", "", "", "", "", "", "", "", ""],
     ["    environment:", "", "", "", "", "", "", "", "", ""],
-    ["      - SERVER_DISCORD_BOT_TOKEN=MTM4MTMzNjM1OTE5Njk1MDU5OA.GNW9ge.4BHWL_xhn8AdNqoMT_cQY2gse0neDPb-TxHLG4", "", "", "", "", "", "", "", "", ""],
+    ["      - SERVER_DISCORD_BOT_TOKEN=${SERVER_DISCORD_BOT_TOKEN}", "", "", "", "", "", "", "", "", ""],
     ["    restart: unless-stopped", "", "", "", "", "", "", "", "", ""],
     ["    volumes:", "", "", "", "", "", "", "", "", ""],
     ["      - ./credentials:/app/credentials", "", "", "", "", "", "", "", "", ""],

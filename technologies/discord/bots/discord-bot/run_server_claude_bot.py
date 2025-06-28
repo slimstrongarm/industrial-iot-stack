@@ -7,9 +7,9 @@ Designed to run on the server for always-on mobile coordination
 import os
 import sys
 
-# Set Discord bot tokens
-os.environ['MAC_DISCORD_BOT_TOKEN'] = 'MTM4MTMxQxOTk0NTk3NTc3Mzc3OA.G9KB9Q.jODzGUt8TnHyaqAAy0KbB4tdalezysXG-_6xJ4'
-os.environ['SERVER_DISCORD_BOT_TOKEN'] = 'MTM4MTMzNjM1OTE5Njk1MDU5OA.GNW9ge.4BHWL_xhn8AdNqoMT_cQY2gse0neDPb-TxHLG4'
+# Set Discord bot tokens from environment
+os.environ['MAC_DISCORD_BOT_TOKEN'] = os.environ.get('MAC_DISCORD_BOT_TOKEN', '')
+os.environ['SERVER_DISCORD_BOT_TOKEN'] = os.environ.get('SERVER_DISCORD_BOT_TOKEN', '')
 
 print("🏭 Server Claude Discord Bot Launcher")
 print("=" * 60)
