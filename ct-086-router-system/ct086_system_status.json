@@ -1,0 +1,12 @@
+{
+  "deployment_status": "failed",
+  "all_agents_deployed": false,
+  "deployment_time": "2025-06-16T23:09:50.213170",
+  "deployment_duration": 0.127658,
+  "agent_results": {
+    "agent1_router_config": false
+  },
+  "failed_agents": [
+    "agent1_router_config"
+  ]
+}

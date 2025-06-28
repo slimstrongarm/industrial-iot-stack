@@ -19,6 +19,14 @@
 
 ## 🔧 Component Documentation
 
+### Edge Computing & IoT Systems
+- **[🛡️ CT-086 GL.iNet Router System](CT-086_COMPLETE_GUIDE.md)** - ⭐ **NEWEST** - Secure portable network infrastructure with VPN, monitoring, and authentication
+- **[CT-086 Quick Reference](CT-086_QUICK_REFERENCE.md)** - Fast deployment and troubleshooting for router system
+- **[🔍 CT-085 Network Discovery Agent](CT-085_COMPLETE_GUIDE.md)** - AI-powered industrial network discovery with professional dashboards
+- **[🪂 CT-084 Parachute Drop System](CT-084_COMPLETE_GUIDE.md)** - Complete industrial IoT edge system
+- **[CT-084 Quick Reference](CT-084_QUICK_REFERENCE.md)** - Fast deployment and troubleshooting  
+- **[Edge Computing Guide](../stack-components/edge-computing/CT084-COMPLETE-SYSTEM-GUIDE.md)** - Technical implementation details
+
 ### Communication Systems
 - **[WhatsApp Integration](WHATSAPP_API_INTEGRATION_GUIDE.md)** - Complete WhatsApp API guide
 - **[Discord Integration](DISCORD_INTEGRATION_VISION.md)** - Team coordination setup
@@ -163,6 +171,6 @@
 - **Google Sheets**: Progress tracking and analytics
 - **GitHub Issues**: Bug reports and feature requests
 
-**Last Updated**: 2025-06-08 00:39:07 UTC  
+**Last Updated**: 2025-06-16 12:30:00 UTC  
 **Repository Organization**: 5/5 ⭐  
 **Ready for Production**: ✅
