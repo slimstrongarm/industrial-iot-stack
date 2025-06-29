@@ -1,0 +1,6 @@
+pyserial>=3.5
+struct
+threading
+queue
+datetime
+json
