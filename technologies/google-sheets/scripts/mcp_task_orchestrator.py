@@ -15,7 +15,7 @@ class TaskOrchestrator:
     """MCP-inspired orchestrator for managing Claude Tasks in Google Sheets"""
     
     def __init__(self):
-        self.creds_path = "/Users/joshpayneair/Desktop/industrial-iot-stack/credentials/iot-stack-credentials.json"
+        self.creds_path = "/home/server/google-sheets-credentials.json"
         self.spreadsheet_id = "1lLZ7c3ec4PfGb32SWWHFeVN-TF2UJeLUsmH99vBb9Do"
         self.service = self._get_sheets_service()
         
@@ -31,7 +31,7 @@ class TaskOrchestrator:
         }
         
         # Memory file for tracking operations
-        self.memory_file = "/Users/joshpayneair/Desktop/industrial-iot-stack/technologies/google-sheets/.mcp_memory.json"
+        self.memory_file = "/home/server/industrial-iot-stack/technologies/google-sheets/.mcp_memory.json"
         self.memory = self._load_memory()
     
     def _get_sheets_service(self):
@@ -191,7 +191,7 @@ class TaskOrchestrator:
             )
     
     def update_task_status(self, task_id: str, new_status: str) -> Dict:
-        """Update task status"""
+        """Update task status in Google Sheet"""
         
         if new_status not in self.task_schema["allowed_statuses"]:
             return self._format_response(
@@ -202,24 +202,82 @@ class TaskOrchestrator:
             )
         
         try:
-            # Find the task
-            search_result = self.find_tasks(task_id)
-            # Parse the response to get task location
+            # Get all tasks to find the row number
+            result = self.service.spreadsheets().values().get(
+                spreadsheetId=self.spreadsheet_id,
+                range="Claude Tasks!A:K"
+            ).execute()
             
-            # For now, simplified update (would need row number in real implementation)
+            values = result.get('values', [])
+            if not values:
+                return self._format_response(
+                    "UPDATE_STATUS",
+                    "failure",
+                    "No tasks found in sheet",
+                    "Check sheet and try again"
+                )
+            
+            headers = values[0]
+            status_col_index = headers.index('Status') if 'Status' in headers else 4
+            task_id_col_index = headers.index('Task ID') if 'Task ID' in headers else 0
+            
+            # Find the task row
+            task_row = None
+            for i, row in enumerate(values[1:], start=2):  # Start from row 2 (after headers)
+                if len(row) > task_id_col_index and row[task_id_col_index] == task_id:
+                    task_row = i
+                    break
+            
+            if task_row is None:
+                return self._format_response(
+                    "UPDATE_STATUS",
+                    "failure",
+                    f"Task {task_id} not found",
+                    "Check task ID and try again"
+                )
+            
+            # Update the status cell
+            status_cell = f"Claude Tasks!{chr(65 + status_col_index)}{task_row}"
+            update_body = {
+                'values': [[new_status]]
+            }
+            
+            self.service.spreadsheets().values().update(
+                spreadsheetId=self.spreadsheet_id,
+                range=status_cell,
+                valueInputOption="RAW",
+                body=update_body
+            ).execute()
+            
+            # If status is Complete, also update completion date
+            if new_status == "Complete":
+                completed_col_index = headers.index('Completed') if 'Completed' in headers else 9
+                completed_cell = f"Claude Tasks!{chr(65 + completed_col_index)}{task_row}"
+                completion_body = {
+                    'values': [[datetime.now().strftime("%Y-%m-%d")]]
+                }
+                self.service.spreadsheets().values().update(
+                    spreadsheetId=self.spreadsheet_id,
+                    range=completed_cell,
+                    valueInputOption="RAW",
+                    body=completion_body
+                ).execute()
+            
             self._log_operation("UPDATE_STATUS", {
                 "task_id": task_id,
-                "new_status": new_status
+                "new_status": new_status,
+                "row": task_row
             }, "success")
             
             return self._format_response(
                 "UPDATE_STATUS",
                 "success",
-                f"Updated {task_id} status to {new_status}",
-                "Task status has been updated"
+                f"Updated {task_id} status to {new_status} in row {task_row}",
+                "Task status has been updated in Google Sheets"
             )
             
         except Exception as e:
+            self._log_operation("UPDATE_STATUS", {"error": str(e)}, "failure")
             return self._format_response(
                 "UPDATE_STATUS",
                 "failure",
